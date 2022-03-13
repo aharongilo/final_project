@@ -9,6 +9,7 @@ Description: this module represent a round in ANUBIS algorithm
 input:
 - clk
 - clk_en
+- load_text
 - round plain text (128 bits)
 - round key (128 bits)
 
@@ -18,6 +19,7 @@ output:
 module round(
 	input clk,
 	input clk_en,
+	input load_text,
 	input [127:0] round_plain_text,
 	input [127:0] round_key,
 	output [127:0] round_cipher_text
