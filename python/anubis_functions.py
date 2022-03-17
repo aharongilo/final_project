@@ -60,15 +60,25 @@
 #===========================================
 from galois_operations import G_mult as Gmult
 def make_matrix(a):
-     b = []
-     for i in range(2):
+    """
+    for test vectors purpose. create a matrix from a list of numbers.
+    :param a: list of 16 numbers
+    :return: a matrix of 16 GF(2^8) parameters
+    """
+    b = []
+    for i in range(2):
          for j in range(0,len(a)-1,2):
              if j%2 == 0:
                  b = b + [f"{a[j]}{a[j+1]}"]
          a = [a[len(a)-1]] + a[:len(a)-1]
-     return b
+    return b
 
 def transpose(matrix):
+    """
+    for the tau function in ANUBIS algorithm
+    :param matrix: 4x4 matrix
+    :return: the transpose matrix of the input
+    """
     t = []
     t.append(matrix[0])
     t.append(matrix[4])
@@ -89,7 +99,11 @@ def transpose(matrix):
     return t
 
 def permutation(matrix):
-    """ for pi function(permutation) test vector"""
+    """
+    for pi function(permutation) in ANUBIS algorithm
+    :param matrix: matrix of 16 parameters
+    :return: permutated matrix by the ANUBIS permutation
+    """
     t = []
     t.append(matrix[0])
     t.append(matrix[5])
@@ -110,7 +124,11 @@ def permutation(matrix):
     return t
 
 def key_extract(matrix):
-    """ for omega function(key extract) test vector"""
+    """
+    for omega function(key extract) test vector
+    :param matrix: matrix of 16 parameters
+    :return: 4x4 matrix of extracted key
+    """
     t = [0]*16
     primitive = 285
     t[0] = (int(matrix[0], 16) ^ int(matrix[4], 16) ^ int(matrix[8], 16) ^ int(matrix[12], 16))
@@ -135,7 +153,11 @@ def key_extract(matrix):
     return t
 
 def diffusion(matrix):
-    """ for theta function(diffusion) test vector"""
+    """
+    for theta function(diffusion) test vector
+    :param matrix: matrix of 16 parameters
+    :return: diffused matrix in ANUBIS method
+    """
     t = [0]*16
     primitive = 285
     t[0] = (int(matrix[0], 16) ^ Gmult((int(matrix[1], 16) ^ int(matrix[3], 16)),2,primitive) ^ Gmult((int(matrix[2], 16) ^ int(matrix[3], 16)),4,primitive))
@@ -158,13 +180,13 @@ def diffusion(matrix):
         t[i] = hex(t[i]).replace("0x",'').zfill(2)
     return t
 
-
-lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-with open("C:\\Users\\aharo\\Desktop\\theta_256_test_vetor.txt","w") as file:
-    for i in range(16):
-        mat = make_matrix(lst)
-        lst = lst[1:] + [lst[0]]
-        file.write(f"{''.join(mat)} {''.join(diffusion(mat))}\n")
-        # change in the second argument the function name to create the wanted test vector
+if __name__ == "main":
+    lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+    with open("C:\\Users\\aharo\\Desktop\\theta_256_test_vetor.txt","w") as file:
+        for i in range(16):
+            mat = make_matrix(lst)
+            lst = lst[1:] + [lst[0]]
+            file.write(f"{''.join(mat)} {''.join(diffusion(mat))}\n")
+            # change in the second argument the function name to create the wanted test vector
 
 

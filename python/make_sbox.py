@@ -31,8 +31,12 @@ results = [0xa7, 0xd3, 0xe6, 0x71, 0xd0, 0xac, 0x4d, 0x79,
     0xef, 0xe9, 0xe8, 0xfd, 0x89, 0xd7, 0xc7, 0xb5,
     0xa4, 0x2f, 0x95, 0x13, 0x0b, 0xf3, 0xe0, 0x37] # list of strings
 
-with open("C:\\Users\\aharo\\Desktop\\sbox_vecotr.txt","w") as file:
-    for i in range(255):
-        temp = hex(i)[2:]
-        temp_r = hex(results[i])[2:] # from the string "0xaa" we take only "aa"
-        file.write(f"\t\t8h'{temp}: OUT = 8h'{temp_r}\n")
+def gamma(param: str) -> str:
+    return results[int(param,16)]
+
+if __name__ == "main":
+    with open("C:\\Users\\aharo\\Desktop\\sbox_vecotr.txt","w") as file:
+        for i in range(255):
+            temp = hex(i)[2:]
+            temp_r = hex(results[i])[2:] # from the string "0xaa" we take only "aa"
+            file.write(f"\t\t8h'{temp}: OUT = 8h'{temp_r}\n")

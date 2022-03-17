@@ -31,9 +31,10 @@ def transpose(matrix):
     t.append(matrix[15])
     return t
 
-lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-with open("C:\\Users\\aharo\\Desktop\\tau_test_vetor.txt","w") as file:
-    for i in range(16):
-        mat = make_matrix(lst)
-        lst = lst[1:] + [lst[0]]
-        file.write(f"{''.join(mat)} {''.join(transpose(mat))}\n")
+if __name__=="main":
+    lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+    with open("C:\\Users\\aharo\\Desktop\\tau_test_vetor.txt","w") as file:
+        for i in range(16):
+            mat = make_matrix(lst)
+            lst = lst[1:] + [lst[0]]
+            file.write(f"{''.join(mat)} {''.join(transpose(mat))}\n")
