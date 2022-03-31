@@ -1,0 +1,4 @@
+special modulesim commands:
+1. vlog -novopt blk_mem_gen_0_time_impl.v -y D:/Xilinx/Vivado/2016.4/data/verilog/src/unisims +libext+.v
+2. vlog -novopt tb_mult.v
+3. vsim -t ps +masdelays tb_RAM glbl
