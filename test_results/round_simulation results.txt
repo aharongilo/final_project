@@ -1,0 +1,17 @@
+# time = 300000 | text = 0123456789abcdef0123456789abcdef | key = 123456789abcdef0123456789abcdef0 | expected new cipher = 5d5c1910fb3abf765dfd19b170f634ba | last cipher = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# time = 620000 | text = 123456789abcdef0123456789abcdef0 | key = 23456789abcdef0123456789abcdef01 | expected new cipher = 097b4db779fd3d31c32987e5f345b789 | last cipher = 5d5c1910fb3abf765dfd19b170f634ba
+# time = 940000 | text = 23456789abcdef0123456789abcdef01 | key = 3456789abcdef0123456789abcdef012 | expected new cipher = 55d0191cf317bfdbde1c92d0d491985d | last cipher = 097b4db779fd3d31c32987e5f345b789
+# time = 1260000 | text = 3456789abcdef0123456789abcdef012 | key = 456789abcdef0123456789abcdef0123 | expected new cipher = 97575b9b2d83e14f1defd123f3c53f09 | last cipher = 55d0191cf317bfdbde1c92d0d491985d
+# time = 1580000 | text = 456789abcdef0123456789abcdef0123 | key = 56789abcdef0123456789abcdef01234 | expected new cipher = 19b1d57534baf87e3e37f2f358919455 | last cipher = 97575b9b2d83e14f1defd123f3c53f09
+# time = 1900000 | text = 56789abcdef0123456789abcdef01234 | key = 6789abcdef0123456789abcdef012345 | expected new cipher = 87e54ba1b7897bcd59a395e7dfd31397 | last cipher = 19b1d57534baf87e3e37f2f358919455
+# time = 2220000 | text = 6789abcdef0123456789abcdef012345 | key = 789abcdef0123456789abcdef0123456 | expected new cipher = 92d05694985d5c19fefb3abf395dfd19 | last cipher = 87e54ba1b7897bcd59a395e7dfd31397
+# time = 2540000 | text = 789abcdef0123456789abcdef0123456 | key = 89abcdef0123456789abcdef01234567 | expected new cipher = d12395673f097b4db979fd3d6dc32987 | last cipher = 92d05694985d5c19fefb3abf395dfd19
+# time = 2860000 | text = 89abcdef0123456789abcdef01234567 | key = 9abcdef0123456789abcdef012345678 | expected new cipher = f2f3b6bf9455d01953f317bf58de1c92 | last cipher = d12395673f097b4db979fd3d6dc32987
+# time = 3180000 | text = 9abcdef0123456789abcdef012345678 | key = abcdef0123456789abcdef0123456789 | expected new cipher = 95e7d12b1397575bc72d83e1ab1defd1 | last cipher = f2f3b6bf9455d01953f317bf58de1c92
+# time = 3500000 | text = abcdef0123456789abcdef0123456789 | key = bcdef0123456789abcdef0123456789a | expected new cipher = 3abf7673fd19b1d5f634baf87b3e37f2 | last cipher = 95e7d12b1397575bc72d83e1ab1defd1
+# time = 3820000 | text = bcdef0123456789abcdef0123456789a | key = cdef0123456789abcdef0123456789ab | expected new cipher = fd3d31f12987e54b45b7897b6f59a395 | last cipher = 3abf7673fd19b1d5f634baf87b3e37f2
+# time = 4140000 | text = cdef0123456789abcdef0123456789ab | key = def0123456789abcdef0123456789abc | expected new cipher = 17bfdb7b1c92d05691985d5c37fefb3a | last cipher = fd3d31f12987e54b45b7897b6f59a395
+# time = 4460000 | text = def0123456789abcdef0123456789abc | key = ef0123456789abcdef0123456789abcd | expected new cipher = 83e14fa5efd12395c53f097bb5b979fd | last cipher = 17bfdb7b1c92d05691985d5c37fefb3a
+# time = 4780000 | text = ef0123456789abcdef0123456789abcd | key = f0123456789abcdef0123456789abcde | expected new cipher = baf87ebc37f2f3b6919455d03753f317 | last cipher = 83e14fa5efd12395c53f097bb5b979fd
+# time = 5100000 | text = f0123456789abcdef0123456789abcde | key = 0123456789abcdef0123456789abcdef | expected new cipher = 897bcd3fa395e7d1d313975769c72d83 | last cipher = baf87ebc37f2f3b6919455d03753f317
+# time = 5420000 | text = f0123456789abcdef0123456789abcde | key = 0123456789abcdef0123456789abcdef | expected new cipher = 897bcd3fa395e7d1d313975769c72d83 | last cipher = 897bcd3fa395e7d1d313975769c72d83

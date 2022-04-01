@@ -30,8 +30,9 @@ def round_function(plain_text: list,round_key: list)-> str:
     after_theta =anubis_functions.diffusion(temp1)
     ## sigma ##
     cipher = []
+    key_matrix = anubis_functions.make_matrix(round_key)
     for r in range(16):
-        xored_param = int(round_key[r],16)^int(after_theta[r],16)
+        xored_param = int(key_matrix[r],16)^int(after_theta[r],16)
         cipher.append(hex(xored_param))
     print([hex(i) for i in text_list])
     print([hex(k) for k in after_tau])
