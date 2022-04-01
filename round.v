@@ -8,6 +8,7 @@ Description: this module represent a round in ANUBIS algorithm
 
 input:
 - clk
+- reset
 - clk_en
 - round number
 - load_text
@@ -19,6 +20,7 @@ output:
 **************************/
 module round(
 	input clk,
+	input reset,
 	input clk_en,
 	input load_text,
 	input [3:0] round_number, // in the 12th round, we don't do sigma
@@ -48,39 +50,47 @@ theta s3(clk,tau_out,step3);
 sigma s4(round_key,theta_out,step4);
 
 always @(negedge clk)
-if (load_text == 1)
+if (reset)
+begin
 	state <= F_GAMMA;
+	cipher <= 0;
+end	
 else
-	case(state)
-		F_GAMMA: if (clk_en)
-					begin
-						state <= F_TAU;
-						gamma_out <= step1;
-					end
-		F_TAU:   if (clk_en)
-					begin
-						state <= F_THETA;
-						tau_out <= step2;
-					end
-		F_THETA: if (clk_en)
-					begin
-						if (round_number == 12)
+begin
+	if (load_text == 1)
+		state <= F_GAMMA;
+	else
+		case(state)
+			F_GAMMA: if (clk_en)
+						begin
+							state <= F_TAU;
+							gamma_out <= step1;
+						end
+			F_TAU:   if (clk_en)
+						begin
+							state <= F_THETA;
+							tau_out <= step2;
+						end
+			F_THETA: if (clk_en)
+						begin
+							if (round_number == 12)
+							begin
+								state <= F_GAMMA;
+								cipher <= step3;
+							end
+							else
+							begin
+								state <= F_SIGMA;
+								theta_out <= step3;
+							end
+						end
+			F_SIGMA: if (clk_en)
 						begin
 							state <= F_GAMMA;
-							cipher <= step3;
+							cipher <= step4;
 						end
-						else
-						begin
-							state <= F_SIGMA;
-							theta_out <= step3;
-						end
-					end
-		F_SIGMA: if (clk_en)
-					begin
-						state <= F_GAMMA;
-						cipher <= step4;
-					end
-	endcase
+		endcase
+end
 
 assign round_cipher_text = cipher;
 		
