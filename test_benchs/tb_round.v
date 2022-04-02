@@ -65,6 +65,7 @@ begin
 	else
 		load_text = 0;
 end
+
 initial
 	test_vector = $fopen("round_test_vector.txt","rb");
 

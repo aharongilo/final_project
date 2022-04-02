@@ -49,7 +49,9 @@ tau s2(gamma_out,step2);
 theta s3(clk,tau_out,step3);
 sigma s4(round_key,theta_out,step4);
 
-always @(negedge clk)
+always @(negedge clk) 
+/* negedge to sample the right value of clk_en and load_text. sampling in negedge instead of posedg will let them time to
+to go pu or down after the posedge clk*/
 if (reset)
 begin
 	state <= F_GAMMA;
