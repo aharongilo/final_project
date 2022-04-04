@@ -41,50 +41,96 @@ def round_function(plain_text: list,round_key: list)-> str:
     print(after_theta)
     return cipher
 
-def key_schedule(key,round_constant):
+def key_evolution(key: list,round_constant: list)-> list:
     """
-    make the keys to every round in the algorithm
+    first part of the key schedule
     :param key: key for encryption
     :param round_constant: for algorithm purpose
     :return: round key for every round
     """
     ## gamma ##
+    key_list = []
+    for i in key:
+        temp = make_sbox.gamma(i)
+        key_list.append(temp)
     ## pi ##
+    after_pi = anubis_functions.transpose(key_list)
     ## theta ##
+    temp1 = turnToHex(after_pi)
+    after_theta = anubis_functions.diffusion(temp1)
     ## sigma ##
+    evolutioned_key = []
+    for r in range(16):
+        xored_param = int(round_constant[r], 16) ^ int(after_theta[r], 16)
+        evolutioned_key.append(hex(xored_param))
+    return evolutioned_key
+
+def key_selection(evolutioned_key: list)->list:
+    """
+    the second part of the key schedule
+    :param evolutioned_key: the results of the key evolution
+    :return: the key schedule for the round
+    """
     ## gamma ##
+    key_list = []
+    for i in key:
+        temp = make_sbox.gamma(i)
+        key_list.append(temp)
     ## omega ##
+    #temp1 = turnToHex(key_list)
+    after_omega = anubis_functions.key_extract(key_list)
     ## tau ##
-    pass
+    round_key = anubis_functions.transpose(after_omega)
+    return round_key
 
 # b = ["0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33"]
 # k = ["0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33","0x00","0x11","0x22","0x33"]
 # a = round_function(b,k)
 # print(a)
 lst = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
-with open("C:\\Users\\aharo\\Desktop\\round_test_vector.txt", "w") as file:
+round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con4 = ["1e", "47", "54", "bd", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con5 = ["8c", "a5", "7a", "fb", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con6 = ["63", "b8", "dd", "d4", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con7 = ["e5", "b3", "c5", "be", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con8 = ["a9", "88", "0c", "a2", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con9 = ["39", "df", "29", "da", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con10 = ["2b", "a8", "cb", "4c", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con11 = ["4b", "22", "aa", "24", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+constant_list = [round_con1,round_con2,round_con3,round_con4,round_con5,round_con6,round_con7,round_con8,round_con9,round_con10,round_con11,round_con12]
+with open("C:\\Users\\aharo\\Desktop\\key_evolution_test_vector.txt", "w") as file:
+    """ for round test vector """
+    # for i in range(16):
+    #     text = []
+    #     double_list = lst + lst
+    #     for j in range(0,len(double_list),2):
+    #         text.append(f"{double_list[j]}{double_list[j+1]}")
+    #     lst = lst[1:] + [lst[0]]
+    #     key = lst + lst
+    #     a = round_function(text,key)
+    #     b = []
+    #     for j,param in enumerate(a):
+    #          b.append(param.replace("0x",'').zfill(2))
+    #     print(f"{''.join(text)} {''.join(key)} {''.join(b)}\n")
+    #     file.write(f"{''.join(text)} {''.join(key)} {''.join(b)}\n")
+    """ for key evolution test vector """
     for i in range(16):
         text = []
         double_list = lst + lst
         for j in range(0,len(double_list),2):
             text.append(f"{double_list[j]}{double_list[j+1]}")
         lst = lst[1:] + [lst[0]]
-        key = lst + lst
-        a = round_function(text,key)
+        if (i<12):
+            a = key_evolution(text,constant_list[i])
+        else:
+            a = key_evolution(text, constant_list[11])
         b = []
         for j,param in enumerate(a):
              b.append(param.replace("0x",'').zfill(2))
-        print(f"{''.join(text)} {''.join(key)} {''.join(b)}\n")
-        file.write(f"{''.join(text)} {''.join(key)} {''.join(b)}\n")
-# a = int("4f684f68618661864fc94fc9ea4aea4a",16)
-# b = "123456789abcdef0123456789abcdef0"
-# #c = "5d5c1910fb3abf765dfd19b170f634ba"
-# c = "b76579fc1f9ce49aee9a3e20f069469a"
-# d = []
-# e = []
-# for i in c:
-#     d.append(i)
-#
-# for j in b:
-#     e.append(j)
-# print(round_function(d,e))
+        if(i<12):
+            file.write(f"{''.join(text)} {''.join(constant_list[i])} {''.join(b)}\n")
+        else:
+            file.write(f"{''.join(text)} {''.join(constant_list[11])} {''.join(b)}\n")
