@@ -54,7 +54,7 @@ def key_evolution(key: list,round_constant: list)-> list:
         temp = make_sbox.gamma(i)
         key_list.append(temp)
     ## pi ##
-    after_pi = anubis_functions.transpose(key_list)
+    after_pi = anubis_functions.permutation(key_list)
     ## theta ##
     temp1 = turnToHex(after_pi)
     after_theta = anubis_functions.diffusion(temp1)
@@ -63,6 +63,9 @@ def key_evolution(key: list,round_constant: list)-> list:
     for r in range(16):
         xored_param = int(round_constant[r], 16) ^ int(after_theta[r], 16)
         evolutioned_key.append(hex(xored_param))
+    print(key_list)
+    print(after_pi)
+    print(after_theta)
     return evolutioned_key
 
 def key_selection(evolutioned_key: list)->list:
@@ -73,7 +76,7 @@ def key_selection(evolutioned_key: list)->list:
     """
     ## gamma ##
     key_list = []
-    for i in key:
+    for i in evolutioned_key:
         temp = make_sbox.gamma(i)
         key_list.append(temp)
     ## omega ##
@@ -132,5 +135,7 @@ with open("C:\\Users\\aharo\\Desktop\\key_evolution_test_vector.txt", "w") as fi
              b.append(param.replace("0x",'').zfill(2))
         if(i<12):
             file.write(f"{''.join(text)} {''.join(constant_list[i])} {''.join(b)}\n")
+            print(f"{''.join(text)} {''.join(constant_list[i])} {''.join(b)}\n")
         else:
             file.write(f"{''.join(text)} {''.join(constant_list[11])} {''.join(b)}\n")
+            print(f"{''.join(text)} {''.join(constant_list[11])} {''.join(b)}\n")

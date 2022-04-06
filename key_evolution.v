@@ -80,7 +80,7 @@ begin
 		endcase
 end
 
-always@(posedge load_key)
+always@(negedge load_key)
 /*only at the first round of key schedule, key evolution get an input from outside,
 in any other round, it feeds itself from the last result*/
 	if (round_num == 1)

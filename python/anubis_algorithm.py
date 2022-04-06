@@ -1,18 +1,18 @@
 """
 matrix = list of 16 number in hexadecimal, where each number represent one byte
 """
-import anubis_functions
+class MyMatrix():
+    def init(self,numbers: list, size: int):
+        """
+        we will create a matrix form a list on strings, when each string represent a
+        hexadecimal number between 0 to 256 (one byte)
+        :param numbers: list of numbers to create matrix from them
+        :return: matrix = list of 16 number in hexadecimal, where each number represent one byte
+        """
+        self.size = size
+        if type(numbers) != list:
+            assert False, "please enter a list to make a matrix"
+        if len(numbers) != self.size:
+            assert False, "please enter a list size of 16"
 
-a = ['4f', '68', '4f', '68', '61', '86', '61', '86', '4f', 'c9', '4f', 'c9', 'ea', '4a', 'ea', '4a']
-k = ["12","34","56","78","9a","bc","de","f0","12","34","56","78","9a","bc","de","f0"]
-a1 = "4f684f68618661864fc94fc9ea4aea4a"
-k1 = "123456789abcdef0123456789abcdef0"
 
-cipher = []
-for i in range(16):
-    xored_param = int(k[i],16)^int(a[i],16)
-    cipher.append(hex(xored_param))
-result = hex(int(a1,16) ^ int(k1,16))
-
-print(f"cipher = {cipher}")
-print(f"result = {result}")
