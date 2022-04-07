@@ -44,8 +44,8 @@ theta ps3(clk,pi_out,step3);
 sigma ps4(round_constant,theta_out,step4);
 
 always@(negedge clk)
-/* negedge to sample the right value of clk_en and load_key. sampling in negedge instead of posedg will let them time to
-to go pu or down after the posedge clk*/
+/* negedge to sample the right value of clk_en and load_key. sampling in negedge instead of posedge will let them time to
+to go up or down after the posedge clk*/
 if (reset)
 begin
 	state <= F_GAMMA;

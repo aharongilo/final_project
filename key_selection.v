@@ -11,6 +11,7 @@ input:
 - clk
 - reset
 - clk_en
+- load_key
 - evolutioned_key (128 bits)
 
 output:
@@ -21,7 +22,8 @@ module key_selection(
 	input clk,
 	input reset,
 	input clk_en,
-	input [127:0] evolutioned_key
+	input load_key,
+	input [127:0] evolutioned_key,
 	output [127:0] round_key
 );
 
@@ -36,7 +38,7 @@ reg [1:0] state;
 
 gamma sk1(evolutioned_key,step1);
 omega sk2(clk,gamma_out,step2);
-tau sk3(omega_out,step3)
+tau sk3(omega_out,step3);
 
 always@(negedge clk)
 /* negedge to sample the right value of clk_en and load_text. sampling in negedge instead of posedg will let them time to
@@ -44,7 +46,7 @@ to go pu or down after the posedge clk*/
 if (reset)
 begin
 	state <= F_GAMMA;
-	evolutioned_key <= 0;
+	selected_key <= 0;
 end
 else
 begin
