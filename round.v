@@ -24,7 +24,7 @@ module round(
 	input clk_en,
 	input load_text,
 	input [3:0] round_number, // in the 12th round, we don't do sigma
-	input [127:0] round_plain_text,
+	input [127:0] plain_text,
 	input [127:0] round_key,
 	output [127:0] round_cipher_text
 );
@@ -37,7 +37,7 @@ localparam F_SIGMA = 2'b11;
 wire [127:0] step1,step2,step3,step4;
 reg [127:0] gamma_out, tau_out, theta_out,cipher,data_in;
 reg [1:0] state;
-
+reg [127:0] round_plain_text;
 /*
 	clk_en will be driven by the ANUBIS top module
 	it will rise up every 3 clocks, to let the slowest function,
@@ -96,7 +96,13 @@ end
 
 assign round_cipher_text = cipher;
 		
-
+always@(negedge load_text)
+begin
+	if (round_number == 1)
+		round_plain_text = plain_text;
+	else
+		round_plain_text = cipher;
+end
 /*gamma s1(round_plain_text,step1);
 tau   s2(gamma_out,step2);
 theta s3(tau_out,step3);
