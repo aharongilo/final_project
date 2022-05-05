@@ -1,19 +1,37 @@
 """
 matrix = list of 16 number in hexadecimal, where each number represent one byte
 """
-def Gmult(num1:int ,num2:int, pri_polynom:int):
-    temp = 0
-    for counter,i in enumerate(bin(num2)[2:]):
-        if i == '1':
-            temp = temp^(num1<<len(bin(num2)[2:])-(counter+1))
-    if len(bin(temp)) < len(bin(pri_polynom)):
-        return temp
-    elif len(bin(temp)) == len(bin(pri_polynom)):
-        return (temp - 2**(len(bin(temp))-1))^(pri_polynom - 2**(len(bin(pri_polynom))-1))
+import json
+def Gmult(num1:int, num2:int, pri_polynom:int, power=False):
+    if power == True:
+        base = num1
+        powerBy = num2
+        for _ in range(powerBy-1):
+            temp = 0
+            for counter, i in enumerate(bin(num1)[2:]):
+                if i == '1':
+                    temp = temp ^ (base << len(bin(num1)[2:]) - (counter + 1))
+            base = temp
+        if len(bin(temp)) < len(bin(pri_polynom)):
+            return temp
+        elif len(bin(temp)) == len(bin(pri_polynom)):
+            return (temp - 2 ** (len(bin(temp)) - 1)) ^ (pri_polynom - 2 ** (len(bin(pri_polynom)) - 1))
+        else:
+            while (len(bin(temp)) >= len(bin(pri_polynom))):
+                temp = temp ^ (pri_polynom << (len(bin(temp)) - len(bin(pri_polynom))))
     else:
-        while(len(bin(temp)) >= len(bin(pri_polynom))):
-            temp = temp^ (pri_polynom<<(len(bin(temp)) - len(bin(pri_polynom))))
-        return temp
+        temp = 0
+        for counter,i in enumerate(bin(num2)[2:]):
+            if i == '1':
+                temp = temp^(num1<<len(bin(num2)[2:])-(counter+1))
+        if len(bin(temp)) < len(bin(pri_polynom)):
+            return temp
+        elif len(bin(temp)) == len(bin(pri_polynom)):
+            return (temp - 2**(len(bin(temp))-1))^(pri_polynom - 2**(len(bin(pri_polynom))-1))
+        else:
+            while(len(bin(temp)) >= len(bin(pri_polynom))):
+                temp = temp^ (pri_polynom<<(len(bin(temp)) - len(bin(pri_polynom))))
+    return temp
 
 class anubis_functions:
     sbox = [0xa7, 0xd3, 0xe6, 0x71, 0xd0, 0xac, 0x4d, 0x79,
@@ -91,21 +109,21 @@ class anubis_functions:
         """
         t = []
         t.append(matrix[0])
-        t.append(matrix[5])
-        t.append(matrix[10])
-        t.append(matrix[15])
-        t.append(matrix[4])
-        t.append(matrix[9])
-        t.append(matrix[14])
-        t.append(matrix[3])
-        t.append(matrix[8])
         t.append(matrix[13])
-        t.append(matrix[2])
+        t.append(matrix[10])
         t.append(matrix[7])
-        t.append(matrix[12])
+        t.append(matrix[4])
         t.append(matrix[1])
-        t.append(matrix[6])
+        t.append(matrix[14])
         t.append(matrix[11])
+        t.append(matrix[8])
+        t.append(matrix[5])
+        t.append(matrix[2])
+        t.append(matrix[15])
+        t.append(matrix[12])
+        t.append(matrix[9])
+        t.append(matrix[6])
+        t.append(matrix[3])
         return t
 
     @classmethod
@@ -117,22 +135,22 @@ class anubis_functions:
         """
         t = [0]*16
         primitive = 285
-        t[0] = (int(matrix[15], 16) ^ int(matrix[11], 16) ^ int(matrix[7], 16) ^ int(matrix[3], 16))
-        t[1] = (int(matrix[14], 16) ^ int(matrix[10], 16) ^ int(matrix[6], 16) ^ int(matrix[2], 16))
-        t[2] = (int(matrix[13], 16) ^ int(matrix[9], 16) ^ int(matrix[5], 16) ^ int(matrix[1], 16))
-        t[3] = (int(matrix[12], 16) ^ int(matrix[8], 16) ^ int(matrix[4], 16) ^ int(matrix[0], 16))
-        t[4] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),2,primitive) ^ Gmult(int(matrix[7], 16),4,primitive) ^ Gmult(int(matrix[3], 16),8,primitive))
-        t[5] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),2,primitive) ^ Gmult(int(matrix[6], 16),4,primitive) ^ Gmult(int(matrix[2], 16),8,primitive))
-        t[6] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),2,primitive) ^ Gmult(int(matrix[5], 16),4,primitive) ^ Gmult(int(matrix[1], 16),8,primitive))
-        t[7] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),2,primitive) ^ Gmult(int(matrix[4], 16),4,primitive) ^ Gmult(int(matrix[0], 16),8,primitive))
-        t[8] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),6,primitive) ^ Gmult(int(matrix[7], 16),36,primitive) ^ Gmult(int(matrix[3], 16),216,primitive))
-        t[9] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),6,primitive) ^ Gmult(int(matrix[6], 16),36,primitive) ^ Gmult(int(matrix[2], 16),216,primitive))
-        t[10] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),6,primitive) ^ Gmult(int(matrix[5], 16),36,primitive) ^ Gmult(int(matrix[1], 16),216,primitive))
-        t[11] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),6,primitive) ^ Gmult(int(matrix[4], 16),36,primitive) ^ Gmult(int(matrix[0], 16),216,primitive))
-        t[12] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),8,primitive) ^ Gmult(int(matrix[7], 16),64,primitive) ^ Gmult(int(matrix[3], 16),512,primitive))
-        t[13] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),8,primitive) ^ Gmult(int(matrix[6], 16),64,primitive) ^ Gmult(int(matrix[2], 16),512,primitive))
-        t[14] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),8,primitive) ^ Gmult(int(matrix[5], 16),64,primitive) ^ Gmult(int(matrix[1], 16),512,primitive))
-        t[15] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),8,primitive) ^ Gmult(int(matrix[4], 16),64,primitive) ^ Gmult(int(matrix[0], 16),512,primitive))
+        t[0] = (int(matrix[0], 16) ^ int(matrix[4], 16) ^ int(matrix[8], 16) ^ int(matrix[12], 16))
+        t[1] = (int(matrix[1], 16) ^ int(matrix[5], 16) ^ int(matrix[9], 16) ^ int(matrix[13], 16))
+        t[2] = (int(matrix[2], 16) ^ int(matrix[6], 16) ^ int(matrix[10], 16) ^ int(matrix[14], 16))
+        t[3] = (int(matrix[3], 16) ^ int(matrix[7], 16) ^ int(matrix[11], 16) ^ int(matrix[15], 16))
+        t[4] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),2,primitive) ^ Gmult(int(matrix[8], 16),4,primitive) ^ Gmult(int(matrix[12], 16),8,primitive))
+        t[5] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),2,primitive) ^ Gmult(int(matrix[9], 16),4,primitive) ^ Gmult(int(matrix[13], 16),8,primitive))
+        t[6] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),2,primitive) ^ Gmult(int(matrix[10], 16),4,primitive) ^ Gmult(int(matrix[14], 16),8,primitive))
+        t[7] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),2,primitive) ^ Gmult(int(matrix[11], 16),4,primitive) ^ Gmult(int(matrix[15], 16),8,primitive))
+        t[8] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),6,primitive) ^ Gmult(int(matrix[8], 16),20,primitive) ^ Gmult(int(matrix[12], 16),120,primitive))
+        t[9] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),6,primitive) ^ Gmult(int(matrix[9], 16),20,primitive) ^ Gmult(int(matrix[13], 16),120,primitive))
+        t[10] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),6,primitive) ^ Gmult(int(matrix[10], 16),20,primitive) ^ Gmult(int(matrix[14], 16),120,primitive))
+        t[11] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),6,primitive) ^ Gmult(int(matrix[11], 16),20,primitive) ^ Gmult(int(matrix[15], 16),120,primitive))
+        t[12] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),8,primitive) ^ Gmult(int(matrix[8], 16),64,primitive) ^ Gmult(int(matrix[12], 16),58,primitive))
+        t[13] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),8,primitive) ^ Gmult(int(matrix[9], 16),64,primitive) ^ Gmult(int(matrix[13], 16),58,primitive))
+        t[14] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),8,primitive) ^ Gmult(int(matrix[10], 16),64,primitive) ^ Gmult(int(matrix[14], 16),58,primitive))
+        t[15] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),8,primitive) ^ Gmult(int(matrix[11], 16),64,primitive) ^ Gmult(int(matrix[15], 16),58,primitive))
 
         for i in range(len(t)): #change the int to (string of)hexa
             t[i] = hex(t[i])[2:].zfill(2)
@@ -166,6 +184,17 @@ class anubis_functions:
         for i in range(len(t)): #change the int to (string of)hexa
             t[i] = hex(t[i]).replace("0x",'').zfill(2)
         return t
+
+    @classmethod
+    def sigma(cls,num1:list,num2:list)->list:
+        result = []
+        if len(num1) != len(num2):
+            assert False, "please enter 2 numbers in the same length"
+        else:
+            for i in range(len(num1)):
+                xored_param = int(num1[i], 16) ^ int(num2[i], 16)
+                result.append(hex(xored_param).replace("0x", '').zfill(2))
+        return result
 
 def turnToHex(matrix):
     result = []
@@ -263,41 +292,106 @@ class MyMatrix:
             assert False, "please enter a matching list and list size"
 
 def anubis_function(key:list, plain_text:list)->list:
-    round_con1 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '71', 'e6', 'd3', 'a7']
-    round_con2 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '79', '4d', 'ac', 'd0']
-    round_con3 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'fc', '91', 'c9', '3a']
-    round_con4 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'bd', '54', '47', '1e']
-    round_con5 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'fb', '7a', 'a5', '8c']
-    round_con6 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'd4', 'dd', 'b8', '63']
-    round_con7 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'be', 'c5', 'b3', 'e5']
-    round_con8 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'a2', '0c', '88', 'a9']
-    round_con9 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'da', '29', 'df', '39']
-    round_con10 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '4c', 'cb', 'a8', '2b']
-    round_con11 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '24', 'aa', '22', '4b']
-    round_con12 = ['00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', '00', 'f9', 'a6', '70', '41']
+    round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con4 = ["1e", "47", "54", "bd", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con5 = ["8c", "a5", "7a", "fb", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con6 = ["63", "b8", "dd", "d4", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con7 = ["e5", "b3", "c5", "be", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con8 = ["a9", "88", "0c", "a2", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con9 = ["39", "df", "29", "da", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con10 = ["2b", "a8", "cb", "4c", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con11 = ["4b", "22", "aa", "24", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+    round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,
                      round_con9, round_con10, round_con11, round_con12]
-    round_zero_output = round_zero(key,plain_text)
-    evolutioned_key = []
-    round_out = []
-    for i in range(1,13,1):
-        if i==1:
-            evolutioned_key = key_evolution(key,constant_list[i-1])
-        else:
-            evolutioned_key = key_evolution(evolutioned_key, constant_list[i-1])
-        selected_key = key_selection(evolutioned_key)
-        if i==1:
-            round_out = round_function(round_zero_output,selected_key,constant_list[i-1])
-        else:
-            round_out = round_function(round_out,selected_key,constant_list[i-1])
+    with open("C:\\Users\\aharo\\Desktop\\anubis_debugging.txt","w") as file:
+        round_zero_output = round_zero(key,plain_text)
+        file.write(f"zero round out: {round_zero_output}\n")
+        evolutioned_key = []
+        round_out = []
+        for i in range(1,13,1):
+            file.write(f"round {i}:\n=======\n")
+            if i==1:
+                evolutioned_key = key_evolution(key,constant_list[i-1])
+            else:
+                evolutioned_key = key_evolution(evolutioned_key, constant_list[i-1])
+            file.write(f"key evolution round {i} : {evolutioned_key}\n")
+            selected_key = key_selection(evolutioned_key)
+            file.write(f"key selection round {i} : {selected_key}\n")
+            if i==1:
+                round_out = round_function(round_zero_output,selected_key,constant_list[i-1])
+            else:
+                round_out = round_function(round_out,selected_key,constant_list[i-1])
+            file.write(f"round out round {i} : {round_out}\n")
     return round_out
 
 
-
+# print(Gmult(8,3,285,True))
+# print(Gmult(Gmult(8,8,285),8,285))
+# a = ["8d","24","53","17","95","95","00","cc","53","16","74","9e","e9","8c","da","05"]
+# print(anubis_functions.pi(a))
+#print(f", the expected value is: ea5cb1bdd970d7d1fbb2b53028ab88e6")
 plain = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"]
 key = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","80"]
-print (f"the answer is {anubis_function(key,plain)}")
+plain1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
+key1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
+# mult_list = [2,4,6,8,20,58,64,120]
+# with open ("C:\\Users\\aharo\\Desktop\\mult_rom.coe","w") as file:
+#     for i in mult_list:
+#         for j in range(256):
+#             file.write(f"{hex(Gmult(i,j,285)).replace('0x','').zfill(2)} ")
+#print(anubis_function(key,plain))
+# print(Gmult(Gmult(8,8,285),8,285))
+#print(hex(Gmult(6,6,285)))
 
+def make_matrix(a):
+    b = []
+    for i in range(2):
+        #print("a matrix is:")
+        #print(a, len(a))
+        for j in range(0, len(a) - 1, 2):
+            if j % 2 == 0:
+                #print(j)
+                b = b + [f"{a[j]}{a[j + 1]}"]
+        a = [a[len(a) - 1]] + a[:len(a) - 1]
+    return b
+
+# print(hex(Gmult(58,int("0x01",16),285)))
+# print(58^253^211^120)
+# print(int("0x78",16)^int("0xd3",16)^int("0xfd",16)^int("0x3a",16))
+lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+#round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+with open("C:\\Users\\aharo\\Desktop\\omega_test_vector.txt","w") as file:
+    for i in range(16):
+        mat = make_matrix(lst)
+        lst = lst[1:] + [lst[0]]
+        print(mat)
+        #file.write(f"{''.join(mat)} {''.join(anubis_functions.omega(mat))}\n")
+        result = anubis_functions.omega(mat)
+        mat1 = []
+        #round_con11 = []
+        result1 = []
+        for j in range(len(mat)):
+            mat1.append(mat[15-j])
+            result1.append(result[15-j])
+            #round_con11.append(round_con1[15-j])
+        file.write(f"{''.join(mat1)} {''.join(result1)}\n")
+        #file.write(f"{''.join(mat1)} {''.join(round_con11)} {''.join(result1)}\n")
+
+        #print(mat)
+        #print(anubis_functions.pi(mat))
+
+#print(anubis_functions.omega(key1))
+#cipher = anubis_function(key,plain)
+#str = "".join(cipher[i] for i in range(len(cipher)-1,-1,-1))
+#print (f"the answer is {str}\n we expect: F06860FC6730E818F132C78AF4132AFE")
+# with open("C:\\Users\\aharo\\Desktop\\mult_by_2.json","r") as file:
+#     mult = file.readlines()
+#     for i in range(256):
+#            print(f"{mult[i][:len(mult[i])-2]} Gmult{i} = {hex(Gmult(i,2,285)).replace('0x', '').zfill(2)}")
+#            print("pass" if hex(Gmult(i,2,285)).replace('0x', '').zfill(2) in mult[i] else "FAIL!!!!!!")
 # round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
 # round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
 # round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
