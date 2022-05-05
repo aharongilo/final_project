@@ -13,15 +13,17 @@ transpose is an operation of linear algebra mathematics. for a given matrix:
    5  6  7  8
    9  10 11 12
    13 14 15 16
+   
 the transpose matrix will be:
    1  5  9  13
    2  6  10 14
    3  7  11 15
    4  8  12 16
+   
 in the code vector representation, for a given matrix organize as vector:
-   1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+   16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1   
 the vector for transpose matrix will be:
-   1 5 9 13 2 6 10 14 3 7 11 15 4 8 12 16
+   16 12 8 4 15 11 7 3 14 10 6 2 13 9 5 1                                    	
 
 input:
 - matrix (128 bits)

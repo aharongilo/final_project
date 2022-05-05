@@ -23,6 +23,15 @@ in our case, N=4, therefor, the matrix will be:
     1 8 40 200
 the equation is:  extract key = V*key
 extract key is a mtrix with size of 4x4.
+the key vector is:
+[MSB] 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 [LSB]
+
+therefor, the key matrix is:
+ 1  2  3  4
+ 5  6  7  8
+ 9 10 11 12 
+13 14 15 16 
+
 in addition, the multiplying above GF(2^8) will be executed by block ROM module made using the 
 VIVADO software of the Xilinx company.
 
@@ -41,77 +50,79 @@ module omega
 	output [127:0] extract_key
 );
 reg [127:0] mult_result = 0;
-// we will make wires to conect with the block rom modules. for example: mkey44 mean multply by 4, the 4 element in the matrix column.
-wire [7:0] mkey21, mkey22, mkey23, mkey24, mkey41, mkey42, mkey43, mkey44, mkey81, mkey82, mkey83, mkey84, mkey61, mkey62, mkey63, mkey64, mkey361, mkey362, mkey363, mkey364, mkey2161, mkey2162, mkey2163, mkey2164, mkey85, mkey86, mkey87, mkey88, mkey641, mkey642, mkey643, mkey644, mkey5121, mkey5122, mkey5123, mkey5124;
+// we will make wires to conect with the block rom modules. for example: mkey_4_4 mean multply by 4, the 4th element in the matrix column.
+wire [7:0] mkey_2_1, mkey_2_2, mkey_2_3, mkey_2_4, mkey_4_1, mkey_4_2, mkey_4_3, mkey_4_4, mkey_8_1, mkey_8_2, mkey_8_3, mkey_8_4, mkey_6_1, mkey_6_2, mkey_6_3, mkey_6_4, mkey_14_1, mkey_14_2, mkey_14_3, mkey_14_4, mkey_78_1, mkey_78_2, mkey_78_3, mkey_78_4, mkey_8_5, mkey_8_6, mkey_8_7, mkey_8_8, mkey_64_1, mkey_64_2, mkey_64_3, mkey_64_4, mkey_3a_1, mkey_3a_2, mkey_3a_3, mkey_3a_4;
 // multiplication second row in V matrix (the first row is all 1) 
-mult_rom C2R1M2 (clk,{3'b000,key[95:88]},mkey21); //column 2 of key matrix, multiply by 2
-mult_rom C2R2M2 (clk,{3'b000,key[87:80]},mkey22);
-mult_rom C2R3M2 (clk,{3'b000,key[79:72]},mkey23);
-mult_rom C2R4M2 (clk,{3'b000,key[71:64]},mkey24);
+mult_rom C2R1M2 (clk,{3'b000,key[39:32]},mkey_2_1); //column 2 of key matrix, the element in the first row, multiply by 2
+mult_rom C2R2M2 (clk,{3'b000,key[47:40]},mkey_2_2);
+mult_rom C2R3M2 (clk,{3'b000,key[55:48]},mkey_2_3);
+mult_rom C2R4M2 (clk,{3'b000,key[63:56]},mkey_2_4);
 
-mult_rom C3R1M4 (clk,{3'b001,key[63:56]},mkey41);
-mult_rom C3R2M4 (clk,{3'b001,key[55:48]},mkey42);
-mult_rom C3R3M4 (clk,{3'b001,key[47:40]},mkey43);
-mult_rom C3R4M4 (clk,{3'b001,key[39:32]},mkey44);
+mult_rom C3R1M4 (clk,{3'b001,key[71:64]},mkey_4_1);
+mult_rom C3R2M4 (clk,{3'b001,key[79:72]},mkey_4_2);
+mult_rom C3R3M4 (clk,{3'b001,key[87:80]},mkey_4_3);
+mult_rom C3R4M4 (clk,{3'b001,key[95:88]},mkey_4_4);
 
-mult_rom C4R1M8 (clk,{3'b011,key[31:24]},mkey81);
-mult_rom C4R2M8 (clk,{3'b011,key[23:16]},mkey82);
-mult_rom C4R3M8 (clk,{3'b011,key[15:8]},mkey83);
-mult_rom C4R4M8 (clk,{3'b011,key[7:0]},mkey84);
+mult_rom C4R1M8 (clk,{3'b011,key[103:96]},mkey_8_1);
+mult_rom C4R2M8 (clk,{3'b011,key[111:104]},mkey_8_2);
+mult_rom C4R3M8 (clk,{3'b011,key[119:112]},mkey_8_3);
+mult_rom C4R4M8 (clk,{3'b011,key[127:120]},mkey_8_4);
 
 // multiplication third row in V matrix 
-mult_rom C2R1M6 (clk,{3'b010,key[95:88]},mkey61);
-mult_rom C2R2M6 (clk,{3'b010,key[87:80]},mkey62);
-mult_rom C2R3M6 (clk,{3'b010,key[79:72]},mkey63);
-mult_rom C2R4M6 (clk,{3'b010,key[71:64]},mkey64);
+mult_rom C2R1M6 (clk,{3'b010,key[39:32]},mkey_6_1);
+mult_rom C2R2M6 (clk,{3'b010,key[47:40]},mkey_6_2);
+mult_rom C2R3M6 (clk,{3'b010,key[55:48]},mkey_6_3);
+mult_rom C2R4M6 (clk,{3'b010,key[63:56]},mkey_6_4);
 
-mult_rom C3R1M36 (clk,{3'b100,key[63:56]},mkey361);
-mult_rom C3R2M36 (clk,{3'b100,key[55:48]},mkey362);
-mult_rom C3R3M36 (clk,{3'b100,key[47:40]},mkey363);
-mult_rom C3R4M36 (clk,{3'b100,key[39:32]},mkey364);
+mult_rom C3R1M14 (clk,{3'b100,key[71:64]},mkey_14_1);
+mult_rom C3R2M14 (clk,{3'b100,key[79:72]},mkey_14_2);
+mult_rom C3R3M14 (clk,{3'b100,key[87:80]},mkey_14_3);
+mult_rom C3R4M14 (clk,{3'b100,key[95:88]},mkey_14_4);
 
-mult_rom C4R1M216 (clk,{3'b110,key[31:24]},mkey2161);
-mult_rom C4R2M216 (clk,{3'b110,key[23:16]},mkey2162);
-mult_rom C4R3M216 (clk,{3'b110,key[15:8]},mkey2163);
-mult_rom C4R4M216 (clk,{3'b110,key[7:0]},mkey2164);
+mult_rom C4R1M78 (clk,{3'b111,key[103:96]},mkey_78_1);
+mult_rom C4R2M78 (clk,{3'b111,key[111:104]},mkey_78_2);
+mult_rom C4R3M78 (clk,{3'b111,key[119:112]},mkey_78_3);
+mult_rom C4R4M78 (clk,{3'b111,key[127:120]},mkey_78_4);
 
 // multiplication fourth row in V matrix 
-mult_rom C2R1M8 (clk,{3'b011,key[95:88]},mkey85);
-mult_rom C2R2M8 (clk,{3'b011,key[87:80]},mkey86);
-mult_rom C2R3M8 (clk,{3'b011,key[79:72]},mkey87);
-mult_rom C2R4M8 (clk,{3'b011,key[71:64]},mkey88);
+mult_rom C2R1M8 (clk,{3'b011,key[39:32]},mkey_8_5);
+mult_rom C2R2M8 (clk,{3'b011,key[47:40]},mkey_8_6);
+mult_rom C2R3M8 (clk,{3'b011,key[55:48]},mkey_8_7);
+mult_rom C2R4M8 (clk,{3'b011,key[63:56]},mkey_8_8);
 
-mult_rom C3R1M64 (clk,{3'b101,key[63:56]},mkey641);
-mult_rom C3R2M64 (clk,{3'b101,key[55:48]},mkey642);
-mult_rom C3R3M64 (clk,{3'b101,key[47:40]},mkey643);
-mult_rom C3R4M64 (clk,{3'b101,key[39:32]},mkey644);
+mult_rom C3R1M64 (clk,{3'b110,key[71:64]},mkey_64_1);
+mult_rom C3R2M64 (clk,{3'b110,key[79:72]},mkey_64_2);
+mult_rom C3R3M64 (clk,{3'b110,key[87:80]},mkey_64_3);
+mult_rom C3R4M64 (clk,{3'b110,key[95:88]},mkey_64_4);
 
-mult_rom C4R1M512 (clk,{3'b111,key[31:24]},mkey5121);
-mult_rom C4R2M512 (clk,{3'b111,key[23:16]},mkey5122);
-mult_rom C4R3M512 (clk,{3'b111,key[15:8]},mkey5123);
-mult_rom C4R4M512 (clk,{3'b111,key[7:0]},mkey5124);
+mult_rom C4R1M3a (clk,{3'b101,key[103:96]},mkey_3a_1);
+mult_rom C4R2M3a (clk,{3'b101,key[111:104]},mkey_3a_2);
+mult_rom C4R3M3a (clk,{3'b101,key[119:112]},mkey_3a_3);
+mult_rom C4R4M3a (clk,{3'b101,key[127:120]},mkey_3a_4);
 
-always@(mkey21 or mkey22 or mkey23 or mkey24 or mkey41 or mkey42 or mkey43 or mkey44 or mkey81 or mkey82 or mkey83 or mkey84 or mkey61 or mkey62 or mkey63 or mkey64 or mkey361 or mkey362 or mkey363 or mkey364 or mkey2161 or mkey2162 or mkey2163 or mkey2164 or mkey85 or mkey86 or mkey87 or mkey88 or mkey641 or mkey642 or mkey643 or mkey644 or mkey5121 or mkey5122 or mkey5123 or mkey5124)
+always@(mkey_2_1 or mkey_2_2 or mkey_2_3 or mkey_2_4 or mkey_4_1 or mkey_4_2 or mkey_4_3 or mkey_4_4 or mkey_8_1 or mkey_8_2 or mkey_8_3 or mkey_8_4 or mkey_6_1 or mkey_6_2 or mkey_6_3 or mkey_6_4 or mkey_14_1 or mkey_14_2 or mkey_14_3 or mkey_14_4 or mkey_78_1 or mkey_78_2 or mkey_78_3 or mkey_78_4 or mkey_8_5 or mkey_8_6 or mkey_8_7 or mkey_8_8 or mkey_64_1 or mkey_64_2 or mkey_64_3 or mkey_64_4 or mkey_3a_1 or mkey_3a_2 or mkey_3a_3 or mkey_3a_4)
 begin
-	mult_result[127:120] = (key[127:120] ^ key[95:88] ^ key[63:56] ^ key[31:24]);
-	mult_result[119:112] = (key[119:112] ^ key[87:80] ^ key[55:48] ^ key[23:16]);
-	mult_result[111:104] = (key[111:104] ^ key[79:72] ^ key[47:40] ^ key[15:8]);
-	mult_result[103:96]  = (key[103:96] ^ key[71:64] ^ key[39:32] ^ key[7:0]);
-
-	mult_result[95:88]   = (key[127:120] ^ mkey21 ^ mkey41 ^ mkey81);
-	mult_result[87:80]   = (key[119:112] ^ mkey22 ^ mkey42 ^ mkey82);
-	mult_result[79:72]   = (key[111:104] ^ mkey23 ^ mkey43 ^ mkey83);
-	mult_result[71:64]   = (key[103:96] ^ mkey24 ^ mkey44 ^ mkey84);
-
-	mult_result[63:56]   = (key[127:120] ^ mkey61 ^ mkey361 ^ mkey2161);
-	mult_result[55:48]   = (key[119:112] ^ mkey62 ^ mkey362 ^ mkey2162);
-	mult_result[47:40]   = (key[111:104] ^ mkey63 ^ mkey363 ^ mkey2163);
-	mult_result[39:32]   = (key[103:96] ^ mkey64 ^ mkey364 ^ mkey2164);
-
-	mult_result[31:24]   = (key[127:120] ^ mkey85 ^ mkey641 ^ mkey5121);
-	mult_result[23:16]   = (key[119:112] ^ mkey86 ^ mkey642 ^ mkey5122);
-	mult_result[15:8]    = (key[111:104] ^ mkey87 ^ mkey643 ^ mkey5123);
-	mult_result[7:0]     = (key[103:96] ^ mkey88 ^ mkey644 ^ mkey5124);
+	
+	mult_result[7:0]     = (key[7:0] ^ key[39:32] ^ key[71:64] ^ key[103:96]);
+	mult_result[15:8]    = (key[15:8] ^ key[47:40] ^ key[79:72] ^ key[111:104]);
+	mult_result[23:16]   = (key[23:16] ^ key[55:48] ^ key[87:80] ^ key[119:112]);
+	mult_result[31:24]   = (key[31:24] ^ key[63:56] ^ key[95:88] ^ key[127:120]);
+	
+	mult_result[39:32]   = (key[7:0]^mkey_2_1^mkey_4_1^mkey_8_1);
+	mult_result[47:40]   = (key[15:8]^mkey_2_2^mkey_4_2^mkey_8_2);
+	mult_result[55:48]   = (key[23:16]^mkey_2_3^mkey_4_3^mkey_8_3);
+	mult_result[63:56]   = (key[31:24]^mkey_2_4^mkey_4_4^mkey_8_4);
+	
+	mult_result[71:64]   = (key[7:0]^mkey_6_1^mkey_14_1^mkey_78_1);
+	mult_result[79:72]   = (key[15:8]^mkey_6_2^mkey_14_2^mkey_78_2);
+	mult_result[87:80]   = (key[23:16]^mkey_6_3^mkey_14_3^mkey_78_3);
+	mult_result[95:88]   = (key[31:24]^mkey_6_4^mkey_14_4^mkey_78_4);
+	
+	mult_result[103:96]  = (key[7:0]^mkey_8_5^mkey_64_1^mkey_3a_1);
+	mult_result[111:104] = (key[15:8]^mkey_8_6^mkey_64_2^mkey_3a_2);
+	mult_result[119:112] = (key[23:16]^mkey_8_7^mkey_64_3^mkey_3a_3);
+	mult_result[127:120] = (key[31:24]^mkey_8_8^mkey_64_4^mkey_3a_4);
+	
 end
 
 assign extract_key = mult_result;

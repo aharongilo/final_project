@@ -47,50 +47,74 @@ module theta(
 
 wire [7:0] temp1 , temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
 reg [127:0] result = 0;
-	
-mult_rom M1(clk,{3'b000,data_in[119:112]^data_in[103:96]},temp1);  //2*(
-mult_rom M2(clk,{3'b000,data_in[127:120]^data_in[111:104]},temp2);
-mult_rom M3(clk,{3'b001,data_in[111:104]^data_in[103:96]},temp3);
-mult_rom M4(clk,{3'b001,data_in[127:120]^data_in[119:112]},temp4);
 
-mult_rom M5(clk,{3'b000,(data_in[87:80]^data_in[71:64])},temp5);
-mult_rom M6(clk,{3'b000,(data_in[95:88]^data_in[79:72])},temp6);
-mult_rom M7(clk,{3'b001,(data_in[79:72]^data_in[71:64])},temp7);
-mult_rom M8(clk,{3'b001,(data_in[95:88]^data_in[87:80])},temp8);
+//LSB: first line in the matrix
+mult_rom M1(clk,{3'b000,data_in[15:8]^data_in[31:24]},temp1);  
+mult_rom M2(clk,{3'b000,data_in[7:0]^data_in[23:16]},temp2);
+mult_rom M3(clk,{3'b001,data_in[23:16]^data_in[31:24]},temp3);
+mult_rom M4(clk,{3'b001,data_in[7:0]^data_in[15:8]},temp4);
 
-mult_rom M9(clk,{3'b001,(data_in[55:48]^data_in[39:32])},temp9);
-mult_rom M10(clk,{3'b001,(data_in[63:56]^data_in[47:40])},temp10);
-mult_rom M11(clk,{3'b001,(data_in[47:40]^data_in[39:32])},temp11);
-mult_rom M12(clk,{3'b001,(data_in[63:56]^data_in[55:48])},temp12);
+mult_rom M5(clk,{3'b000,(data_in[47:40]^data_in[63:56])},temp5);
+mult_rom M6(clk,{3'b000,(data_in[39:32]^data_in[55:48])},temp6);
+mult_rom M7(clk,{3'b001,(data_in[55:48]^data_in[63:56])},temp7);
+mult_rom M8(clk,{3'b001,(data_in[39:32]^data_in[47:40])},temp8);
 
-mult_rom M13(clk,{3'b000,(data_in[23:16]^data_in[7:0])},temp13);
-mult_rom M14(clk,{3'b000,(data_in[31:24]^data_in[15:8])},temp14);
-mult_rom M15(clk,{3'b001,(data_in[15:8]^data_in[7:0])},temp15);
-mult_rom M16(clk,{3'b001,(data_in[31:24]^data_in[23:16])},temp16);
+mult_rom M9(clk,{3'b000,(data_in[79:72]^data_in[95:88])},temp9);
+mult_rom M10(clk,{3'b000,(data_in[71:64]^data_in[87:80])},temp10);
+mult_rom M11(clk,{3'b001,(data_in[87:80]^data_in[95:88])},temp11);
+mult_rom M12(clk,{3'b001,(data_in[71:64]^data_in[79:72])},temp12);
+
+mult_rom M13(clk,{3'b000,(data_in[111:104]^data_in[127:120])},temp13);
+mult_rom M14(clk,{3'b000,(data_in[103:96]^data_in[119:112])},temp14);
+mult_rom M15(clk,{3'b001,(data_in[119:112]^data_in[127:120])},temp15);
+mult_rom M16(clk,{3'b001,(data_in[103:96]^data_in[111:104])},temp16);
 
 always @(temp1 or temp2 or temp3 or temp4 or temp5 or temp6 or temp7 or temp8 or temp9 or temp10 or temp11 or temp12 or temp13 or temp14 or temp15 or temp16)
 begin
-	result[127:120] = data_in[127:120]^temp1^temp3;   
-	result[119:112] = data_in[119:112]^temp2^temp3;  
-	result[111:104] = data_in[111:104]^temp1^temp4; 
-	result[103:96]  = data_in[103:96]^temp2^temp4;
+	result[127:120] = data_in[127:120]^temp14^temp16;//temp1^temp3;   
+	result[119:112] = data_in[119:112]^temp13^temp16;//temp2^temp3;  
+	result[111:104] = data_in[111:104]^temp14^temp15;//temp1^temp4; 
+	result[103:96]  = data_in[103:96]^temp13^temp15;//temp2^temp4;
 	
-	result[95:88] = data_in[95:88]^temp5^temp7;   
-	result[87:80] = data_in[87:80]^temp6^temp7;  
-	result[79:72] = data_in[79:72]^temp5^temp8; 
-	result[71:64] = data_in[71:64]^temp6^temp8;
+	result[95:88] = data_in[95:88]^temp10^temp12;//temp5^temp7;   
+	result[87:80] = data_in[87:80]^temp9^temp12;//temp6^temp7;  
+	result[79:72] = data_in[79:72]^temp10^temp11;//temp5^temp8; 
+	result[71:64] = data_in[71:64]^temp9^temp11;//temp6^temp8;
 	
-	result[63:56] = data_in[63:56]^temp9^temp11;   
-	result[55:48] = data_in[55:48]^temp10^temp11;  
-	result[47:40] = data_in[47:40]^temp9^temp12; 
-	result[39:32] = data_in[39:32]^temp10^temp12;
+	result[63:56] = data_in[63:56]^temp6^temp8;//temp9^temp11;   
+	result[55:48] = data_in[55:48]^temp5^temp8;//temp10^temp11;  
+	result[47:40] = data_in[47:40]^temp6^temp7;//temp9^temp12; 
+	result[39:32] = data_in[39:32]^temp5^temp7;//temp10^temp12;
 	
-	result[31:24] = data_in[31:24]^temp13^temp15;   
-	result[23:16] = data_in[23:16]^temp14^temp15;  
-	result[15:8] = data_in[15:8]^temp13^temp16; 
-	result[7:0]  = data_in[7:0]^temp14^temp16;
+	result[31:24] = data_in[31:24]^temp2^temp4;//temp13^temp15;   
+	result[23:16] = data_in[23:16]^temp1^temp4;//temp14^temp15;  
+	result[15:8] = data_in[15:8]^temp2^temp3;//temp13^temp16; 
+	result[7:0]  = data_in[7:0]^temp1^temp3;//temp14^temp16;
 end
 
 assign deffused_data = result;
 
 endmodule
+
+
+/*
+/*
+mult_rom M1(clk,{3'b000,data_in[119:112]^data_in[103:96]},temp1);  
+mult_rom M2(clk,{3'b000,data_in[127:120]^data_in[111:104]},temp2);
+mult_rom M3(clk,{3'b001,data_in[111:104]^data_in[103:96]},temp3);
+mult_rom M4(clk,{3'b001,data_in[127:120]^data_in[119:112]},temp4);
+*/
+
+/*
+mult_rom M5(clk,{3'b000,(data_in[87:80]^data_in[71:64])},temp5);
+mult_rom M6(clk,{3'b000,(data_in[95:88]^data_in[79:72])},temp6);
+mult_rom M7(clk,{3'b001,(data_in[79:72]^data_in[71:64])},temp7);
+mult_rom M8(clk,{3'b001,(data_in[95:88]^data_in[87:80])},temp8);
+*/
+
+/*
+mult_rom M13(clk,{3'b000,(data_in[23:16]^data_in[7:0])},temp13);
+mult_rom M14(clk,{3'b000,(data_in[31:24]^data_in[15:8])},temp14);
+mult_rom M15(clk,{3'b001,(data_in[15:8]^data_in[7:0])},temp15);
+mult_rom M16(clk,{3'b001,(data_in[31:24]^data_in[23:16])},temp16);
+*/
