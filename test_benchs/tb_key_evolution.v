@@ -3,7 +3,7 @@
 module tb_key_evolution();
 
 reg clk = 0;
-reg clk_en;
+//reg clk_en;
 reg reset=1;
 reg load_key;
 reg [3:0] round_num=1;
@@ -18,17 +18,25 @@ always
 
 initial
 	//reset = 1;
-	#30 reset = 0;
+	#40 reset = 0;
 
+always@(evolutioned_key_out)
+begin
+	load_key <= 1;
+	#20 load_key <= 0;
+end
 
 always@(posedge clk)
 begin 
-	/*if (counter == 13)
-		counter = 0;
-	else*/ 
-		counter = counter+1;
+	if (reset)
+		counter <= 0;
+	else
+		if (load_key)
+			counter <= 0;
+		else
+			counter = counter+1;
 end
-
+/*
 always@(posedge clk)
 begin
 		if (counter%4 == 0)
@@ -36,14 +44,8 @@ begin
 		else
 			clk_en = 0;
 end
+*/
 
-always@(posedge clk)
-begin
-	if (counter == 15)
-		load_key = 1;
-	else
-		load_key = 0;
-end
 
 initial
 	test_vector = $fopen("key_evolution_test_vector.txt","rb");
@@ -65,7 +67,8 @@ always@(posedge load_key)
 
 key_evolution DUT(
 .clk(clk),
-.clk_en(clk_en),
+//.clk_en(clk_en),
+.counter(counter),
 .reset(reset),
 .round_num(round_num),
 .load_key(load_key),

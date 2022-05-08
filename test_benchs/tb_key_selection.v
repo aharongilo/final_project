@@ -2,10 +2,12 @@
 module tb_key_selection();
 
 reg clk = 0;
-reg clk_en;
+//reg clk_en;
 reg reset=1;
 reg load_key;
-reg [127:0] in_key, expected_result;
+reg [127:0] in_key;
+reg [127:0] sigma;
+reg [127:0] expected_result;
 wire [127:0] out;
 reg [3:0] counter = 4'b0000;
 
@@ -15,27 +17,23 @@ always
 	#10 clk = ~clk;
 	
 initial
-	#30 reset = 0;
+	#35 reset = 0;
 	
-always@(posedge clk)
-begin  
-	counter = counter+1;
+always@(out)
+begin
+	load_key <= 1;
+	#20 load_key <= 0;
 end
 
 always@(posedge clk)
-begin
-		if (counter%4 == 0)
-			clk_en = 1;
-		else
-			clk_en = 0;
-end
-
-always@(posedge clk)
-begin
-	if (counter == 15)
-		load_key = 1;
+begin 
+	if (reset)
+		counter <= 0;
 	else
-		load_key = 0;
+		if (load_key)
+			counter <= 0;
+		else
+			counter = counter+1;
 end
 
 initial
@@ -54,10 +52,13 @@ always@(posedge load_key)
 			   $time,in_key,expected_result,out);
 
 
+//assign expected_result = out^sigma;
+
 key_selection DUT (
 .clk(clk),
-.clk_en(clk_en),
+//.clk_en(clk_en),
 .reset(reset),
+.counter(counter),
 .load_key(load_key),
 .evolutioned_key(in_key),
 .round_key(out)
