@@ -1,7 +1,6 @@
 """
 matrix = list of 16 number in hexadecimal, where each number represent one byte
 """
-import json
 def Gmult(num1:int, num2:int, pri_polynom:int, power=False):
     if power == True:
         base = num1
@@ -196,6 +195,72 @@ class anubis_functions:
                 result.append(hex(xored_param).replace("0x", '').zfill(2))
         return result
 
+    @classmethod
+    def key_evolution(cls, key: list, round_constant: list) -> list:
+        """
+        first part of the key schedule
+        :param key: key for encryption
+        :param round_constant: for algorithm purpose
+        :return: round key for every round
+        """
+        #print("key_evolution:\n===============\n")
+        ## gamma ##
+        key_list = anubis_functions.gamma(key)
+        #print(f"gamma: {key_list}")
+        ## pi ##
+        after_pi = anubis_functions.pi(key_list)
+        #print(f"pi: {after_pi}")
+        ## theta ##
+        after_theta = anubis_functions.theta(after_pi)
+        #print(f"theta: {after_theta}")
+        ## sigma ##
+        evolutioned_key = anubis_functions.sigma(after_theta, round_constant)
+        #print(f"key evolution: {evolutioned_key}")
+        return evolutioned_key
+
+    @classmethod
+    def key_selection(cls, evolutioned_key: list) -> list:
+        """
+        the second part of the key schedule
+        :param evolutioned_key: the results of the key evolution
+        :return: the key schedule for the round
+        """
+        #print("key_selection:\n===============\n")
+        ## gamma ##
+        key_list = anubis_functions.gamma(evolutioned_key)
+        #print(f"gamma: {key_list}")
+        ## omega ##
+        after_omega = anubis_functions.omega(key_list)
+        #print(f"omega: {after_omega}")
+        ## tau ##
+        round_key = anubis_functions.tau(after_omega)
+        #print(f"key selection: {round_key}")
+        return round_key
+
+    @classmethod
+    def round_function(cls, plain_text: list, round_key: list, round_number: int) -> str:
+        """
+        round of the ANUBIS algorithm
+        :param round_number:
+        :param plain_text: text to crypt,
+        :param round_key: the key to encrypt with for this round
+        :return: cipher text of this round of encrypting
+        """
+        #print("key_selection:\n===============\n")
+        ## gamma ##
+        text_list = anubis_functions.gamma(plain_text)
+        #print(f"gamma: {text_list}")
+        ## tau ##
+        after_tau = anubis_functions.tau(text_list)
+        #print(f"tau: {after_tau}")
+        ## theta ##
+        after_theta = anubis_functions.theta(after_tau) if round_number != 12 else after_tau
+        #print(f"theta: {after_theta}")
+        ## sigma ##
+        cipher = anubis_functions.sigma(after_theta,round_key)
+        #print(f"round out: {cipher}")
+        return cipher
+
 def turnToHex(matrix):
     result = []
     for i in matrix:
@@ -203,76 +268,6 @@ def turnToHex(matrix):
         result.append(t)
     return result
 
-def round_function(plain_text: list,round_key: list, round_number: int)-> str:
-    """
-    round of the ANUBIS algorithm
-    :param round_number:
-    :param plain_text: text to crypt,
-    :param round_key: the key to encrypt with for this round
-    :return: cipher text of this round of encrypting
-    """
-    ## gamma ##
-    text_list = anubis_functions.gamma(plain_text)
-    ## tau ##
-    after_tau = anubis_functions.tau(text_list)
-    ## theta ##
-    after_theta = anubis_functions.theta(after_tau) if round_number != 12 else after_tau
-    ## sigma ##
-    cipher = []
-    for r in range(16):
-        xored_param = int(round_key[r],16)^int(after_theta[r],16)
-        cipher.append(hex(xored_param).replace("0x",'').zfill(2))
-    #print([hex(i) for i in text_list])
-    #print([hex(k) for k in after_tau])
-    # print(turnToHex(text_list))
-    # print(turnToHex(after_tau))
-    #print(after_theta)
-    return cipher
-
-def key_evolution(key: list,round_constant: list)-> list:
-    """
-    first part of the key schedule
-    :param key: key for encryption
-    :param round_constant: for algorithm purpose
-    :return: round key for every round
-    """
-    ## gamma ##
-    key_list = anubis_functions.gamma(key)
-    ## pi ##
-    after_pi = anubis_functions.pi(key_list)
-    ## theta ##
-    after_theta = anubis_functions.theta(after_pi)
-    ## sigma ##
-    evolutioned_key = []
-    for r in range(16):
-        xored_param = int(round_constant[r], 16) ^ int(after_theta[r], 16)
-        evolutioned_key.append(hex(xored_param).replace("0x", '').zfill(2))
-    #print(key_list)
-    #print(after_pi)
-    #print(after_theta)
-    return evolutioned_key
-
-def key_selection(evolutioned_key: list)->list:
-    """
-    the second part of the key schedule
-    :param evolutioned_key: the results of the key evolution
-    :return: the key schedule for the round
-    """
-    ## gamma ##
-    key_list = anubis_functions.gamma(evolutioned_key)
-    ## omega ##
-    after_omega = anubis_functions.omega(key_list)
-    ## tau ##
-    round_key = anubis_functions.tau(after_omega)
-    return round_key
-
-def round_zero(key,plain_text):
-    selected = key_selection(key)
-    round_zero_out = []
-    for r in range(16):
-        xored_param = int(plain_text[r], 16) ^ int(selected[r], 16)
-        round_zero_out.append(hex(xored_param).replace("0x", '').zfill(2))
-    return round_zero_out
 
 class MyMatrix:
     def __init__(self,numbers: list, size: int):
@@ -306,26 +301,30 @@ def anubis_function(key:list, plain_text:list)->list:
     round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,
                      round_con9, round_con10, round_con11, round_con12]
-    with open("C:\\Users\\aharo\\Desktop\\anubis_debugging.txt","w") as file:
-        round_zero_output = round_zero(key,plain_text)
-        file.write(f"zero round out: {round_zero_output}\n")
-        evolutioned_key = []
-        round_out = []
-        for i in range(1,13,1):
-            file.write(f"round {i}:\n=======\n")
-            if i==1:
-                evolutioned_key = key_evolution(key,constant_list[i-1])
-            else:
-                evolutioned_key = key_evolution(evolutioned_key, constant_list[i-1])
-            file.write(f"key evolution round {i} : {evolutioned_key}\n")
-            selected_key = key_selection(evolutioned_key)
-            file.write(f"key selection round {i} : {selected_key}\n")
-            if i==1:
-                round_out = round_function(round_zero_output,selected_key,constant_list[i-1])
-            else:
-                round_out = round_function(round_out,selected_key,constant_list[i-1])
-            file.write(f"round out round {i} : {round_out}\n")
-    return round_out
+    evolutioned_key = [key]
+    selected_key = [anubis_functions.key_selection(key)]
+    rounds_out = []
+    key2use = key
+    plain2use = anubis_functions.sigma(plain_text, selected_key[0])
+    for i in range(12):
+        print(f"\nkey evolution round {i+1}:\n===================\n")
+        print(f"key: {key2use}")
+        evolutioned_key.append(anubis_functions.key_evolution(key2use,constant_list[i]))
+        key2use = evolutioned_key[len(evolutioned_key)-1]
+    for i in range(12):
+        print(f"\nkey_selection round {i + 1}:\n===================\n")
+        print(f"evo key: {evolutioned_key[i+1]}")
+        selected_key.append(anubis_functions.key_selection(evolutioned_key[i+1]))
+    plain2use = anubis_functions.sigma(anubis_functions.key_selection(key),plain)
+    for i in range(12):
+        print(f"\nround out round {i + 1}:\n===================\n")
+        print(f"plain: {plain2use}")
+        print(f"key: {selected_key[i+1]}")
+        rounds_out.append(anubis_functions.round_function(plain2use,selected_key[i+1],i+1))
+        plain2use = rounds_out[len(rounds_out)-1]
+    #for i in rounds_out: print(f"{i}\n")
+    cipher = rounds_out[11]
+    return cipher
 
 
 # print(Gmult(8,3,285,True))
@@ -334,9 +333,12 @@ def anubis_function(key:list, plain_text:list)->list:
 # print(anubis_functions.pi(a))
 #print(f", the expected value is: ea5cb1bdd970d7d1fbb2b53028ab88e6")
 plain = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"]
-key = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","80"]
+key = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"]
 plain1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
 key1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
+expected_zeros = ["84","A4","67","4F","B0","E8","B1","67","2D","0F","F0","3B","66","0F","5F","62"]
+print(f"\ncipher: {anubis_function(key,plain)}")
+print(f"expected: {expected_zeros}")
 # mult_list = [2,4,6,8,20,58,64,120]
 # with open ("C:\\Users\\aharo\\Desktop\\mult_rom.coe","w") as file:
 #     for i in mult_list:
@@ -362,23 +364,55 @@ def make_matrix(a):
 # print(58^253^211^120)
 # print(int("0x78",16)^int("0xd3",16)^int("0xfd",16)^int("0x3a",16))
 lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-#round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-with open("C:\\Users\\aharo\\Desktop\\omega_test_vector.txt","w") as file:
-    for i in range(16):
-        mat = make_matrix(lst)
-        lst = lst[1:] + [lst[0]]
-        print(mat)
-        #file.write(f"{''.join(mat)} {''.join(anubis_functions.omega(mat))}\n")
-        result = anubis_functions.omega(mat)
-        mat1 = []
-        #round_con11 = []
-        result1 = []
-        for j in range(len(mat)):
-            mat1.append(mat[15-j])
-            result1.append(result[15-j])
-            #round_con11.append(round_con1[15-j])
-        file.write(f"{''.join(mat1)} {''.join(result1)}\n")
+round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con4 = ["1e", "47", "54", "bd", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con5 = ["8c", "a5", "7a", "fb", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con6 = ["63", "b8", "dd", "d4", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con7 = ["e5", "b3", "c5", "be", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con8 = ["a9", "88", "0c", "a2", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con9 = ["39", "df", "29", "da", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con10 = ["2b", "a8", "cb", "4c", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con11 = ["4b", "22", "aa", "24", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
+constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,round_con9, round_con10, round_con11, round_con12]
+
+
+
+# evolution =[]
+# with open("C:\\Users\\aharo\\Desktop\\key_schedule_test_vector.txt","w") as file:
+#     for i in range(12):
+#         if i ==0:
+#             evolution = anubis_functions.key_evolution(key,constant_list[i])
+#         else:
+#             evolution = anubis_functions.key_evolution(evolution, constant_list[i])
+#         result = anubis_functions.key_selection(evolution)
+#         evolution1 = []
+#         result1 = []
+#         round_con =[]
+#         for j in range(len(result)):
+#             evolution1.append(evolution[15-j])
+#             result1.append(result[15-j])
+#             round_con.append(constant_list[i][15-j])
+#         file.write(f"{''.join(round_con)} {''.join(evolution1)} {''.join(result1)}\n")
         #file.write(f"{''.join(mat1)} {''.join(round_con11)} {''.join(result1)}\n")
+# with open ("C:\\Users\\aharo\\Desktop\\round_test_vector.txt","w") as file:
+#     for i in range(16):
+#         mat = make_matrix(lst)
+#         lst = lst[1:] + [lst[0]]
+#         print(mat)
+#         #file.write(f"{''.join(mat)} {''.join(anubis_functions.omega(mat))}\n")
+#         result = anubis_functions.round_function(mat,round_con1,1)
+#         mat1 = []
+#         round_con11 = []
+#         result1 = []
+#         for j in range(len(mat)):
+#             mat1.append(mat[15-j])
+#             result1.append(result[15-j])
+#             round_con11.append(round_con1[15-j])
+#         #file.write(f"{''.join(mat1)} {''.join(result1)}\n")
+#         file.write(f"{''.join(mat1)} {''.join(round_con11)} {''.join(result1)}\n")
 
         #print(mat)
         #print(anubis_functions.pi(mat))
@@ -406,3 +440,4 @@ with open("C:\\Users\\aharo\\Desktop\\omega_test_vector.txt","w") as file:
 # round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
 # constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,
 #                      round_con9, round_con10, round_con11, round_con12]
+
