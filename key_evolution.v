@@ -56,9 +56,9 @@ begin
 	if (reset)
 		clk_en <= 0;
 	else
-		if (load_key)
-			clk_en <= 1;
-		else
+		//if (load_key)
+		//	clk_en <= 1;
+		//else
 			if (counter%4 == 3)
 				clk_en <= 1;
 			else
@@ -82,7 +82,7 @@ begin
 	end
 	else
 	begin
-		//if (load_key == 1)
+		if (load_key == 1)
 		//	state <= F_GAMMA;
 		//else
 			case(state)
@@ -121,6 +121,8 @@ begin
 	begin
 		if (load_key)//clk_en
 			if (round_num == 1)
+				key_in <= key;
+			else if (round_num == 0)
 				key_in <= key;
 			else
 				key_in <= out_psi;
