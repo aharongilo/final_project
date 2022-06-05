@@ -1,0 +1,9 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "Z:/mult_rom/mult_rom.sim/sim_1/impl/timing/mult_rom_time_impl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module mult_rom
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_generic_cstr
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_prim_width
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_prim_wrapper_init
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_top
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_v8_3_5
+INFO: [VRFC 10-311] analyzing module blk_mem_gen_v8_3_5_synth
+INFO: [VRFC 10-311] analyzing module glbl

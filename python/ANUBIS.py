@@ -1,5 +1,5 @@
 import make_sbox
-import anubis_functions
+from anubis_functions import anubis_functions as anubis_functions
 
 def turnToHex(matrix):
     result = []
@@ -8,9 +8,10 @@ def turnToHex(matrix):
         result.append(t)
     return result
 
-def round_function(plain_text: list,round_key: list)-> str:
+def round_function(plain_text: list,round_key: list, round_number: int)-> str:
     """
     round of the ANUBIS algorithm
+    :param round_number:
     :param plain_text: text to crypt,
     :param round_key: the key to encrypt with for this round
     :return: cipher text of this round of encrypting
@@ -34,12 +35,12 @@ def round_function(plain_text: list,round_key: list)-> str:
     for r in range(16):
         xored_param = int(key_matrix[r],16)^int(after_theta[r],16)
         cipher.append(hex(xored_param))
-    print([hex(i) for i in text_list])
-    print([hex(k) for k in after_tau])
+    #print([hex(i) for i in text_list])
+    #print([hex(k) for k in after_tau])
     # print(turnToHex(text_list))
     # print(turnToHex(after_tau))
-    print(after_theta)
-    return cipher
+    #print(after_theta)
+    return cipher if round_number < 12 else after_theta
 
 def key_evolution(key: list,round_constant: list)-> list:
     """
@@ -63,9 +64,9 @@ def key_evolution(key: list,round_constant: list)-> list:
     for r in range(16):
         xored_param = int(round_constant[r], 16) ^ int(after_theta[r], 16)
         evolutioned_key.append(hex(xored_param))
-    print(key_list)
-    print(after_pi)
-    print(after_theta)
+    #print(key_list)
+    #print(after_pi)
+    #print(after_theta)
     return evolutioned_key
 
 def key_selection(evolutioned_key: list)->list:
@@ -76,9 +77,9 @@ def key_selection(evolutioned_key: list)->list:
     """
     ## gamma ##
     key_list = []
-    for i in evolutioned_key:
-        temp = make_sbox.gamma(i)
-        key_list.append(temp)
+    # for i in evolutioned_key:
+    #     temp = make_sbox.gamma(i)
+    #     key_list.append(temp)
     print(key_list)
     ## omega ##
     #temp1 = turnToHex(key_list)

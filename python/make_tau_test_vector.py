@@ -1,15 +1,5 @@
 ####  test vector for tau (transpose)   ####
-def make_matrix(a):
-     b = []
-     for i in range(2):
-         print("a matrix is:")
-         print(a,len(a))
-         for j in range(0,len(a)-1,2):
-             if j%2 == 0:
-                 print(j)
-                 b = b + [f"{a[j]}{a[j+1]}"]
-         a = [a[len(a)-1]] + a[:len(a)-1]
-     return b
+
 
 def transpose(matrix):
     t = []
@@ -31,10 +21,23 @@ def transpose(matrix):
     t.append(matrix[15])
     return t
 
+
+def make_matrix(a):
+    b = []
+    for i in range(2):
+        print("a matrix is:")
+        print(a, len(a))
+        for j in range(0, len(a) - 1, 2):
+            if j % 2 == 0:
+                print(j)
+                b = b + [f"{a[j]}{a[j + 1]}"]
+        a = [a[len(a) - 1]] + a[:len(a) - 1]
+    return b
+
 if __name__=="main":
-    lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-    with open("C:\\Users\\aharo\\Desktop\\tau_test_vetor.txt","w") as file:
-        for i in range(16):
-            mat = make_matrix(lst)
-            lst = lst[1:] + [lst[0]]
-            file.write(f"{''.join(mat)} {''.join(transpose(mat))}\n")
+lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
+with open("C:\\Users\\aharo\\Desktop\\tau_test_vetor.txt","w") as file:
+    for i in range(16):
+        mat = make_matrix(lst)
+        lst = lst[1:] + [lst[0]]
+        file.write(f"{''.join(mat)} {''.join(transpose(mat))}\n")

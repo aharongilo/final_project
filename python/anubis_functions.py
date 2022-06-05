@@ -73,112 +73,117 @@ def make_matrix(a):
          a = [a[len(a)-1]] + a[:len(a)-1]
     return b
 
-def transpose(matrix):
-    """
-    for the tau function in ANUBIS algorithm
-    :param matrix: 4x4 matrix
-    :return: the transpose matrix of the input
-    """
-    t = []
-    t.append(matrix[0])
-    t.append(matrix[4])
-    t.append(matrix[8])
-    t.append(matrix[12])
-    t.append(matrix[1])
-    t.append(matrix[5])
-    t.append(matrix[9])
-    t.append(matrix[13])
-    t.append(matrix[2])
-    t.append(matrix[6])
-    t.append(matrix[10])
-    t.append(matrix[14])
-    t.append(matrix[3])
-    t.append(matrix[7])
-    t.append(matrix[11])
-    t.append(matrix[15])
-    return t
+class anubis_functions:
+    @staticmethod
+    def tau(matrix):
+        """
+        for the tau function in ANUBIS algorithm
+        :param matrix: 4x4 matrix
+        :return: the transpose matrix of the input
+        """
+        t = []
+        t.append(matrix[0])
+        t.append(matrix[4])
+        t.append(matrix[8])
+        t.append(matrix[12])
+        t.append(matrix[1])
+        t.append(matrix[5])
+        t.append(matrix[9])
+        t.append(matrix[13])
+        t.append(matrix[2])
+        t.append(matrix[6])
+        t.append(matrix[10])
+        t.append(matrix[14])
+        t.append(matrix[3])
+        t.append(matrix[7])
+        t.append(matrix[11])
+        t.append(matrix[15])
+        return t
 
-def permutation(matrix):
-    """
-    for pi function(permutation) in ANUBIS algorithm
-    :param matrix: matrix of 16 parameters
-    :return: permutated matrix by the ANUBIS permutation
-    """
-    t = []
-    t.append(matrix[0])
-    t.append(matrix[5])
-    t.append(matrix[10])
-    t.append(matrix[15])
-    t.append(matrix[4])
-    t.append(matrix[9])
-    t.append(matrix[14])
-    t.append(matrix[3])
-    t.append(matrix[8])
-    t.append(matrix[13])
-    t.append(matrix[2])
-    t.append(matrix[7])
-    t.append(matrix[12])
-    t.append(matrix[1])
-    t.append(matrix[6])
-    t.append(matrix[11])
-    return t
+    @staticmethod
+    def pi(matrix):
+        """
+        for pi function(permutation) in ANUBIS algorithm
+        :param matrix: matrix of 16 parameters
+        :return: permutated matrix by the ANUBIS permutation
+        """
+        t = []
+        t.append(matrix[4])
+        t.append(matrix[9])
+        t.append(matrix[14])
+        t.append(matrix[3])
+        t.append(matrix[8])
+        t.append(matrix[13])
+        t.append(matrix[2])
+        t.append(matrix[7])
+        t.append(matrix[12])
+        t.append(matrix[1])
+        t.append(matrix[6])
+        t.append(matrix[11])
+        t.append(matrix[0])
+        t.append(matrix[5])
+        t.append(matrix[10])
+        t.append(matrix[15])
+        return t
 
-def key_extract(matrix):
-    """
-    for omega function(key extract) test vector
-    :param matrix: matrix of 16 parameters
-    :return: 4x4 matrix of extracted key
-    """
-    t = [0]*16
-    primitive = 285
-    t[0] = (int(matrix[0], 16) ^ int(matrix[4], 16) ^ int(matrix[8], 16) ^ int(matrix[12], 16))
-    t[1] = (int(matrix[1], 16) ^ int(matrix[5], 16) ^ int(matrix[9], 16) ^ int(matrix[13], 16))
-    t[2] = (int(matrix[2], 16) ^ int(matrix[6], 16) ^ int(matrix[10], 16) ^ int(matrix[14], 16))
-    t[3] = (int(matrix[3], 16) ^ int(matrix[7], 16) ^ int(matrix[11], 16) ^ int(matrix[15], 16))
-    t[4] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),2,primitive) ^ Gmult(int(matrix[8], 16),4,primitive) ^ Gmult(int(matrix[12], 16),8,primitive))
-    t[5] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),2,primitive) ^ Gmult(int(matrix[9], 16),4,primitive) ^ Gmult(int(matrix[13], 16),8,primitive))
-    t[6] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),2,primitive) ^ Gmult(int(matrix[10], 16),4,primitive) ^ Gmult(int(matrix[14], 16),8,primitive))
-    t[7] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),2,primitive) ^ Gmult(int(matrix[11], 16),4,primitive) ^ Gmult(int(matrix[15], 16),8,primitive))
-    t[8] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),6,primitive) ^ Gmult(int(matrix[8], 16),36,primitive) ^ Gmult(int(matrix[12], 16),216,primitive))
-    t[9] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),6,primitive) ^ Gmult(int(matrix[9], 16),36,primitive) ^ Gmult(int(matrix[13], 16),216,primitive))
-    t[10] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),6,primitive) ^ Gmult(int(matrix[10], 16),36,primitive) ^ Gmult(int(matrix[14], 16),216,primitive))
-    t[11] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),6,primitive) ^ Gmult(int(matrix[11], 16),36,primitive) ^ Gmult(int(matrix[15], 16),216,primitive))
-    t[12] = (int(matrix[0], 16) ^ Gmult(int(matrix[4], 16),8,primitive) ^ Gmult(int(matrix[8], 16),64,primitive) ^ Gmult(int(matrix[12], 16),512,primitive))
-    t[13] = (int(matrix[1], 16) ^ Gmult(int(matrix[5], 16),8,primitive) ^ Gmult(int(matrix[9], 16),64,primitive) ^ Gmult(int(matrix[13], 16),512,primitive))
-    t[14] = (int(matrix[2], 16) ^ Gmult(int(matrix[6], 16),8,primitive) ^ Gmult(int(matrix[10], 16),64,primitive) ^ Gmult(int(matrix[14], 16),512,primitive))
-    t[15] = (int(matrix[3], 16) ^ Gmult(int(matrix[7], 16),8,primitive) ^ Gmult(int(matrix[11], 16),64,primitive) ^ Gmult(int(matrix[15], 16),512,primitive))
+    @staticmethod
+    def omega(matrix):
+        """
+        for omega function(key extract) test vector
+        :param matrix: matrix of 16 parameters
+        :return: 4x4 matrix of extracted key
+        """
+        t = [0]*16
+        primitive = 285
+        t[0] = (int(matrix[15], 16) ^ int(matrix[11], 16) ^ int(matrix[7], 16) ^ int(matrix[3], 16))
+        t[1] = (int(matrix[14], 16) ^ int(matrix[10], 16) ^ int(matrix[6], 16) ^ int(matrix[2], 16))
+        t[2] = (int(matrix[13], 16) ^ int(matrix[9], 16) ^ int(matrix[5], 16) ^ int(matrix[1], 16))
+        t[3] = (int(matrix[12], 16) ^ int(matrix[8], 16) ^ int(matrix[4], 16) ^ int(matrix[0], 16))
+        t[4] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),2,primitive) ^ Gmult(int(matrix[7], 16),4,primitive) ^ Gmult(int(matrix[3], 16),8,primitive))
+        t[5] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),2,primitive) ^ Gmult(int(matrix[6], 16),4,primitive) ^ Gmult(int(matrix[2], 16),8,primitive))
+        t[6] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),2,primitive) ^ Gmult(int(matrix[5], 16),4,primitive) ^ Gmult(int(matrix[1], 16),8,primitive))
+        t[7] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),2,primitive) ^ Gmult(int(matrix[4], 16),4,primitive) ^ Gmult(int(matrix[0], 16),8,primitive))
+        t[8] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),6,primitive) ^ Gmult(int(matrix[7], 16),36,primitive) ^ Gmult(int(matrix[3], 16),216,primitive))
+        t[9] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),6,primitive) ^ Gmult(int(matrix[6], 16),36,primitive) ^ Gmult(int(matrix[2], 16),216,primitive))
+        t[10] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),6,primitive) ^ Gmult(int(matrix[5], 16),36,primitive) ^ Gmult(int(matrix[1], 16),216,primitive))
+        t[11] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),6,primitive) ^ Gmult(int(matrix[4], 16),36,primitive) ^ Gmult(int(matrix[0], 16),216,primitive))
+        t[12] = (int(matrix[15], 16) ^ Gmult(int(matrix[11], 16),8,primitive) ^ Gmult(int(matrix[7], 16),64,primitive) ^ Gmult(int(matrix[3], 16),512,primitive))
+        t[13] = (int(matrix[14], 16) ^ Gmult(int(matrix[10], 16),8,primitive) ^ Gmult(int(matrix[6], 16),64,primitive) ^ Gmult(int(matrix[2], 16),512,primitive))
+        t[14] = (int(matrix[13], 16) ^ Gmult(int(matrix[9], 16),8,primitive) ^ Gmult(int(matrix[5], 16),64,primitive) ^ Gmult(int(matrix[1], 16),512,primitive))
+        t[15] = (int(matrix[12], 16) ^ Gmult(int(matrix[8], 16),8,primitive) ^ Gmult(int(matrix[4], 16),64,primitive) ^ Gmult(int(matrix[0], 16),512,primitive))
 
-    for i in range(len(t)): #change the int to (string of)hexa
-        t[i] = hex(t[i])[2:].zfill(2)
-    return t
+        for i in range(len(t)): #change the int to (string of)hexa
+            t[i] = hex(t[i])[2:].zfill(2)
+        return t
 
-def diffusion(matrix):
-    """
-    for theta function(diffusion) test vector
-    :param matrix: matrix of 16 parameters
-    :return: diffused matrix in ANUBIS method
-    """
-    t = [0]*16
-    primitive = 285
-    t[0] = (int(matrix[0], 16) ^ Gmult((int(matrix[1], 16) ^ int(matrix[3], 16)),2,primitive) ^ Gmult((int(matrix[2], 16) ^ int(matrix[3], 16)),4,primitive))
-    t[1] = (int(matrix[1], 16) ^ Gmult((int(matrix[0], 16) ^ int(matrix[2], 16)),2,primitive) ^ Gmult((int(matrix[2], 16) ^ int(matrix[3], 16)),4,primitive))
-    t[2] = (int(matrix[2], 16) ^ Gmult((int(matrix[1], 16) ^ int(matrix[3], 16)),2,primitive) ^ Gmult((int(matrix[0], 16) ^ int(matrix[1], 16)),4,primitive))
-    t[3] = (int(matrix[3], 16) ^ Gmult((int(matrix[0], 16) ^ int(matrix[2], 16)),2,primitive) ^ Gmult((int(matrix[0], 16) ^ int(matrix[1], 16)),4,primitive))
-    t[4] = (int(matrix[4], 16) ^ Gmult((int(matrix[5], 16) ^ int(matrix[7], 16)),2,primitive) ^ Gmult((int(matrix[6], 16) ^ int(matrix[7], 16)),4,primitive))
-    t[5] = (int(matrix[5], 16) ^ Gmult((int(matrix[4], 16) ^ int(matrix[6], 16)),2,primitive) ^ Gmult((int(matrix[6], 16) ^ int(matrix[7], 16)),4,primitive))
-    t[6] = (int(matrix[6], 16) ^ Gmult((int(matrix[5], 16) ^ int(matrix[7], 16)),2,primitive) ^ Gmult((int(matrix[4], 16) ^ int(matrix[5], 16)),4,primitive))
-    t[7] = (int(matrix[7], 16) ^ Gmult((int(matrix[4], 16) ^ int(matrix[6], 16)),2,primitive) ^ Gmult((int(matrix[4], 16) ^ int(matrix[5], 16)),4,primitive))
-    t[8] = (int(matrix[8], 16) ^ Gmult((int(matrix[9], 16) ^ int(matrix[11], 16)),2,primitive) ^ Gmult((int(matrix[10], 16) ^ int(matrix[11], 16)),4,primitive))
-    t[9] = (int(matrix[9], 16) ^ Gmult((int(matrix[8], 16) ^ int(matrix[10], 16)),2,primitive) ^ Gmult((int(matrix[10], 16) ^ int(matrix[11], 16)),4,primitive))
-    t[10] = (int(matrix[10], 16) ^ Gmult((int(matrix[9], 16) ^ int(matrix[11], 16)),2,primitive) ^ Gmult((int(matrix[8], 16) ^ int(matrix[9], 16)),4,primitive))
-    t[11] = (int(matrix[11], 16) ^ Gmult((int(matrix[8], 16) ^ int(matrix[10], 16)),2,primitive) ^ Gmult((int(matrix[8], 16) ^ int(matrix[9], 16)),4,primitive))
-    t[12] = (int(matrix[12], 16) ^ Gmult((int(matrix[13], 16) ^ int(matrix[15], 16)),2,primitive) ^ Gmult((int(matrix[14], 16) ^ int(matrix[15], 16)),4,primitive))
-    t[13] = (int(matrix[13], 16) ^ Gmult((int(matrix[12], 16) ^ int(matrix[14], 16)),2,primitive) ^ Gmult((int(matrix[14], 16) ^ int(matrix[15], 16)),4,primitive))
-    t[14] = (int(matrix[14], 16) ^ Gmult((int(matrix[13], 16) ^ int(matrix[15], 16)),2,primitive) ^ Gmult((int(matrix[12], 16) ^ int(matrix[13], 16)),4,primitive))
-    t[15] = (int(matrix[15], 16) ^ Gmult((int(matrix[12], 16) ^ int(matrix[14], 16)),2,primitive) ^ Gmult((int(matrix[12], 16) ^ int(matrix[13], 16)),4,primitive))
-    for i in range(len(t)): #change the int to (string of)hexa
-        t[i] = hex(t[i]).replace("0x",'').zfill(2)
-    return t
+    @staticmethod
+    def theta(matrix):
+        """
+        for theta function(diffusion) test vector
+        :param matrix: matrix of 16 parameters
+        :return: diffused matrix in ANUBIS method
+        """
+        t = [0]*16
+        primitive = 285
+        t[0] = (int(matrix[0], 16) ^ Gmult((int(matrix[1], 16) ^ int(matrix[3], 16)),2,primitive) ^ Gmult((int(matrix[2], 16) ^ int(matrix[3], 16)),4,primitive))
+        t[1] = (int(matrix[1], 16) ^ Gmult((int(matrix[0], 16) ^ int(matrix[2], 16)),2,primitive) ^ Gmult((int(matrix[2], 16) ^ int(matrix[3], 16)),4,primitive))
+        t[2] = (int(matrix[2], 16) ^ Gmult((int(matrix[1], 16) ^ int(matrix[3], 16)),2,primitive) ^ Gmult((int(matrix[0], 16) ^ int(matrix[1], 16)),4,primitive))
+        t[3] = (int(matrix[3], 16) ^ Gmult((int(matrix[0], 16) ^ int(matrix[2], 16)),2,primitive) ^ Gmult((int(matrix[0], 16) ^ int(matrix[1], 16)),4,primitive))
+        t[4] = (int(matrix[4], 16) ^ Gmult((int(matrix[5], 16) ^ int(matrix[7], 16)),2,primitive) ^ Gmult((int(matrix[6], 16) ^ int(matrix[7], 16)),4,primitive))
+        t[5] = (int(matrix[5], 16) ^ Gmult((int(matrix[4], 16) ^ int(matrix[6], 16)),2,primitive) ^ Gmult((int(matrix[6], 16) ^ int(matrix[7], 16)),4,primitive))
+        t[6] = (int(matrix[6], 16) ^ Gmult((int(matrix[5], 16) ^ int(matrix[7], 16)),2,primitive) ^ Gmult((int(matrix[4], 16) ^ int(matrix[5], 16)),4,primitive))
+        t[7] = (int(matrix[7], 16) ^ Gmult((int(matrix[4], 16) ^ int(matrix[6], 16)),2,primitive) ^ Gmult((int(matrix[4], 16) ^ int(matrix[5], 16)),4,primitive))
+        t[8] = (int(matrix[8], 16) ^ Gmult((int(matrix[9], 16) ^ int(matrix[11], 16)),2,primitive) ^ Gmult((int(matrix[10], 16) ^ int(matrix[11], 16)),4,primitive))
+        t[9] = (int(matrix[9], 16) ^ Gmult((int(matrix[8], 16) ^ int(matrix[10], 16)),2,primitive) ^ Gmult((int(matrix[10], 16) ^ int(matrix[11], 16)),4,primitive))
+        t[10] = (int(matrix[10], 16) ^ Gmult((int(matrix[9], 16) ^ int(matrix[11], 16)),2,primitive) ^ Gmult((int(matrix[8], 16) ^ int(matrix[9], 16)),4,primitive))
+        t[11] = (int(matrix[11], 16) ^ Gmult((int(matrix[8], 16) ^ int(matrix[10], 16)),2,primitive) ^ Gmult((int(matrix[8], 16) ^ int(matrix[9], 16)),4,primitive))
+        t[12] = (int(matrix[12], 16) ^ Gmult((int(matrix[13], 16) ^ int(matrix[15], 16)),2,primitive) ^ Gmult((int(matrix[14], 16) ^ int(matrix[15], 16)),4,primitive))
+        t[13] = (int(matrix[13], 16) ^ Gmult((int(matrix[12], 16) ^ int(matrix[14], 16)),2,primitive) ^ Gmult((int(matrix[14], 16) ^ int(matrix[15], 16)),4,primitive))
+        t[14] = (int(matrix[14], 16) ^ Gmult((int(matrix[13], 16) ^ int(matrix[15], 16)),2,primitive) ^ Gmult((int(matrix[12], 16) ^ int(matrix[13], 16)),4,primitive))
+        t[15] = (int(matrix[15], 16) ^ Gmult((int(matrix[12], 16) ^ int(matrix[14], 16)),2,primitive) ^ Gmult((int(matrix[12], 16) ^ int(matrix[13], 16)),4,primitive))
+        for i in range(len(t)): #change the int to (string of)hexa
+            t[i] = hex(t[i]).replace("0x",'').zfill(2)
+        return t
 
 if __name__ == "main":
     lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]

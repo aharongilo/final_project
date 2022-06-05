@@ -1,0 +1,25 @@
+Vivado Simulator 2016.4
+Copyright 1986-1999, 2001-2016 Xilinx, Inc. All Rights Reserved.
+Running: D:/Xilinx/Vivado/2016.4/bin/unwrapped/win64.o/xelab.exe -wto d94fd1b984754adc9a654c4b78841b16 --debug typical --relax --mt 2 --maxdelay -L xil_defaultlib -L simprims_ver -L secureip --snapshot mult_rom_time_impl -transport_int_delays -pulse_r 0 -pulse_int_r 0 -pulse_e 0 -pulse_int_e 0 xil_defaultlib.mult_rom xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+INFO: [XSIM 43-3451] SDF backannotation process started with SDF file "mult_rom_time_impl.sdf", for root module "mult_rom".
+INFO: [XSIM 43-3452] SDF backannotation was successful for SDF file "mult_rom_time_impl.sdf", for root module "mult_rom".
+Time Resolution for simulation is 1ps
+Compiling module simprims_ver.RB18_INTERNAL_VLOG(DOA_REG=1,DOB...
+Compiling module simprims_ver.RAMB18E1(DOA_REG=1,INIT_00=256'b...
+Compiling module xil_defaultlib.blk_mem_gen_prim_wrapper_init
+Compiling module xil_defaultlib.blk_mem_gen_prim_width
+Compiling module xil_defaultlib.blk_mem_gen_generic_cstr
+Compiling module xil_defaultlib.blk_mem_gen_top
+Compiling module xil_defaultlib.blk_mem_gen_v8_3_5_synth
+Compiling module xil_defaultlib.blk_mem_gen_v8_3_5
+Compiling module simprims_ver.IBUF
+Compiling module simprims_ver.BUFG
+Compiling module simprims_ver.OBUF
+Compiling module xil_defaultlib.mult_rom
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot mult_rom_time_impl

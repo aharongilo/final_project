@@ -2,6 +2,7 @@ module key_schedule(
 	input clk,
 	input reset,
 	input encrypt,
+	input load,
 	input [3:0] counter,
 	input [127:0] key,
 	input [127:0] round_constant,
@@ -10,7 +11,7 @@ module key_schedule(
 );
 
 reg state;
-reg [3:0] cycle_number;// number of the "round" when creating the 
+reg [3:0] cycle_number;// number of the "round" when creating the round keys
 reg [127:0] evolutioned_key,selected_key;
 wire [127:0] step1,step2;
 localparam F_KEY_EVOLUTION = 0;
@@ -35,27 +36,30 @@ begin
 	evolutioned_key <= key;
 end
 
-always@(negedge clk)//posedge
+always@(negedge clk)//negedge
 begin
 	if (reset)
 		cycle_number <= 0;
 	else //if (reset == 0)
-	begin
-		if (counter == 4'hf)
-			case(state)
-				F_KEY_EVOLUTION:begin
-									evolutioned_key <= step1;
-									//state <= F_KEY_SELECTION;
-								end
-				F_KEY_SELECTION: begin
-									selected_key <= step2;
-									if (cycle_number < 12)
-										cycle_number <= cycle_number + 1;
-									else
-										cycle_number <= 13;
-									//state <= F_KEY_EVOLUTION;
-								 end
-			endcase
+	begin	
+		if (load)
+		begin
+			if (counter == 4'hf)
+				case(state)
+					F_KEY_EVOLUTION:begin
+										evolutioned_key <= step1;
+										//state <= F_KEY_SELECTION;
+									end
+					F_KEY_SELECTION: begin
+										selected_key <= step2;
+										if (cycle_number < 12)
+											cycle_number <= cycle_number + 1;
+										else
+											cycle_number <= 13;
+										//state <= F_KEY_EVOLUTION;
+									 end
+				endcase
+		end
 	end
 	//else
 	//	cycle_number <= 1'bZ;

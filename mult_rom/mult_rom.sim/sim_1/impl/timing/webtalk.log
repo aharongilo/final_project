@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Webtalk v2016.4 (64-bit)
+# SW Build 1733598 on Wed Dec 14 22:35:39 MST 2016
+# IP Build 1731160 on Wed Dec 14 23:47:21 MST 2016
+# Start of session at: Wed May 04 18:50:50 2022
+# Process ID: 16676
+# Current directory: Z:/mult_rom/mult_rom.sim/sim_1/impl/timing
+# Command line: wbtcv.exe -mode batch -source Z:/mult_rom/mult_rom.sim/sim_1/impl/timing/xsim.dir/mult_rom_time_impl/webtalk/xsim_webtalk.tcl -notrace
+# Log file: Z:/mult_rom/mult_rom.sim/sim_1/impl/timing/webtalk.log
+# Journal file: Z:/mult_rom/mult_rom.sim/sim_1/impl/timing\webtalk.jou
+#-----------------------------------------------------------
+source Z:/mult_rom/mult_rom.sim/sim_1/impl/timing/xsim.dir/mult_rom_time_impl/webtalk/xsim_webtalk.tcl -notrace
+INFO: [Common 17-206] Exiting Webtalk at Wed May 04 18:50:51 2022...

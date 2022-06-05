@@ -18,11 +18,13 @@ def G_mult(num1:int ,num2:int, pri_polynom:int):
         #temp_deg = len(bin(temp)[2:]) #degree of the multiply result so far
         #pri_deg = len(bin(pri_polynom)[2:]) #degree of the primitive polynom
 
-if __name__ == "__main__":
-    list = [2,4,6,8,36,216,64,512]
-    for num in list:
-        with open (f"C:\\Users\\aharo\\Desktop\\galois_mult\\mult_by_{num}.coe","w") as file:
-            for i in range(0,256):
-                #print(f"i = {hex(i)[2:].zfill(2)}, i*4 = {hex(G_mult(i,4,285))[2:].zfill(2)}")
-                file.write(hex(G_mult(i,num,285))[2:].zfill(2))
-                file.write("\n")
+# if __name__ == "__main__":
+#     list = [2,4,6,8,36,216,64,512]
+#     for num in list:
+#         with open (f"C:\\Users\\aharo\\Desktop\\galois_mult\\mult_by_{num}.coe","w") as file:
+#             for i in range(0,256):
+#                 #print(f"i = {hex(i)[2:].zfill(2)}, i*4 = {hex(G_mult(i,4,285))[2:].zfill(2)}")
+#                 file.write(hex(G_mult(i,num,285))[2:].zfill(2))
+#                 file.write("\n")
+
+print(hex(G_mult(int('a7',16),6,285)))

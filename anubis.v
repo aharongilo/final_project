@@ -1,152 +1,226 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: anubis
-
-Description: this module is the top module of the algorithm implementation
-			 it derive all the nested modules of the algorithm.
-
-input:
-- clk
-- reset
-- plain_text
-- key
-
-output:
-- cipher_text
-**************************/
 module anubis(
 	input clk,
 	input reset,
 	input start,
+	input encrypt,
 	input [127:0] plain_text,
 	input [127:0] key,
 	output [127:0] cipher_text,
 	output end_flag
 );
 
-
-reg load;// mayb should be an input??
-reg load_key_evolution;
-reg load_key_selection;
-reg load_round;
-reg clk_en = 0;
+reg state;
+reg done;
 reg [3:0] counter = 0;
-reg [3:0] round_num = 0;
-reg [1:0] state = 0;
-reg done = 1; //flag to see if all 12 rounds are finished
-reg [127:0] evolutioned_key;
-reg [127:0] selected_key;
-reg [127:0] round_out;
-reg [127:0] cipher;
-wire [127:0] step1;
-wire [127:0] step2;
-wire [127:0] step3;
+reg [3:0] round_num;
+reg [127:0] round_in,current_round_key,cipher;
+reg [127:0] selection_round0,round_key1,round_key2,round_key3,round_key4,round_key5,round_key6,round_key7,round_key8,round_key9,round_key10,round_key11,round_key12;
+wire [127:0] step0,step1,step2;
+wire [3:0] key_schedule_round;
 
-localparam key_evolution = 2'b00;
-localparam key_selection = 2'b01;
-localparam round = 2'b10;
+//round constans:
+reg [127:0] round_constant1 = 128'h00000000000000000000000071e6d3a7;
+reg [127:0] round_constant2 = 128'h000000000000000000000000794dacd0;
+reg [127:0] round_constant3 = 128'h000000000000000000000000fc91c93a;
+reg [127:0] round_constant4 = 128'h000000000000000000000000bd54471e;
+reg [127:0] round_constant5 = 128'h000000000000000000000000fb7aa58c;
+reg [127:0] round_constant6 = 128'h000000000000000000000000d4ddb863;
+reg [127:0] round_constant7 = 128'h000000000000000000000000bec5b3e5;
+reg [127:0] round_constant8 = 128'h000000000000000000000000a20c88a9;
+reg [127:0] round_constant9 = 128'h000000000000000000000000da29df39;
+reg [127:0] round_constant10 = 128'h0000000000000000000000004ccba82b;
+reg [127:0] round_constant11 = 128'h00000000000000000000000024aa224b;
+reg [127:0] round_constant12 = 128'h000000000000000000000000f9a67041;
+reg [127:0] current_round_constant;
 
-always@(posedge clk)
-	if (reset)
-		counter = 0;
-	else
-		counter = counter+1;
-	
-always@(posedge clk) // clk_en proccess. tells when to move stages inside the nested modules (evolution key, selected key and round)
-begin
-	if (reset)
-		clk_en = 0;
-	else
-		if (counter%4 == 0)
-			clk_en = 1;
-		else
-			clk_en = 0;
-end
+localparam key_schedule = 0;
+localparam round = 1;
 
-always@(posedge clk) // load proccess, tells when to jump to the next module (evolution key, selected key and round)
-begin
-
-	if (counter == 15)
-		load = 1;
-	else
-		load = 0;
-end
-
-
-always@(negedge clk) // done proccess. indicates when the cipher text is ready.
-/*negedge to sample the start signal and round number after they change in posedge*/
-begin
-	if (round_num > 12)
-	begin
-		if (start == 0)
-			done = 1;
-		else
-			done = 0;
-	end
-end
-
-key_evolution first(clk,reset,clk_en,load_key_evolution,round_num,key,<round constant>,step1);
-key_selection second(clk,reset,clk_en,load_key_selection,evolutioned_key,step2);
-round step3(clk,reset,clk_en,load_round,round_num,plain_text,selected_key,step3);
+sigma pre(selection_round0,plain_text,step0);
+key_schedule first(clk,reset,encrypt,~state,counter,key,current_round_constant,step1,key_schedule_round);
+round second(clk,reset,counter,state,round_num,round_in,current_round_key,step2);
 
 always@(posedge clk)
-if (reset)
 begin
-	evolutioned_key = 0;
-	selected_key = 0;
-	round_out = 0;
-	round_num = 1;
-	state = 0;
-end
-/*what happened in reset: 
-1. results registers
-2. round number*/
-else
-begin
-	if (done)
-	/*what happened when I'm done*/
+	if (reset)
 	begin
-		cipher = round_out;
-		round_num = 1;
-		state = 0;
+		counter <= 0;
 	end
 	else
 	begin
-	/*state machine for the anubis code*/
-		case(state)
-			key_evolution: if(load)
-						   begin
-								state = key_selection;
-								evolutioned_key = step1;
-						   end
-			key_selection: if(load)
-						   begin
-								state = round;
-								selected_key = step2;
-						   end
-			round: if(load)
-				   begin
-						state = key_evolution;
-						round_out = step3;
-						round_num = round_num + 1;
-				   end
-			else // in any other situatuion, the flow wil restart itself
-			begin
-				state = key_evolution;
-				round_num = 0;
-				counter = 0;
-			end
-				
+		if (done)
+			counter <= 0;
+		else
+			counter <= counter + 1;
+	end
+end
+
+
+always@(posedge clk)
+begin
+	if (reset)
+		state <= 0;
+	else
+		if (start)
+			state <= 0;
+		else
+		begin
+			if (key_schedule_round >12)
+				state <= 1;
+				round_in <= step0;
+		end
+end
+/*
+always@(posedge clk)
+begin
+	if (~state)
+		if (key_schedule_round == 12)
+			round_in <= step0;
+end
+*/
+/*proccess for round constant*/
+always@(negedge clk)
+begin
+	if (reset)
+	begin
+		current_round_constant <= round_constant1;
+	end
+	else
+	begin
+		if (state)
+		begin
+			case(round_num)
+					4'd1: current_round_constant <= round_constant1;
+					4'd2: current_round_constant <= round_constant2;
+					4'd3: current_round_constant <= round_constant3;
+					4'd4: current_round_constant <= round_constant4;
+					4'd5: current_round_constant <= round_constant5;
+					4'd6: current_round_constant <= round_constant6;
+					4'd7: current_round_constant <= round_constant7;
+					4'd8: current_round_constant <= round_constant8;
+					4'd9: current_round_constant <= round_constant9;
+					4'd10: current_round_constant <= round_constant10;
+					4'd11: current_round_constant <= round_constant11;
+					4'd12: current_round_constant <= round_constant12;
+					default: current_round_constant <= round_constant1;
+				endcase
+		end
+		else
+		begin
+			case(key_schedule_round)
+				4'd1: current_round_constant <= round_constant1;
+				4'd2: current_round_constant <= round_constant2;
+				4'd3: current_round_constant <= round_constant3;
+				4'd4: current_round_constant <= round_constant4;
+				4'd5: current_round_constant <= round_constant5;
+				4'd6: current_round_constant <= round_constant6;
+				4'd7: current_round_constant <= round_constant7;
+				4'd8: current_round_constant <= round_constant8;
+				4'd9: current_round_constant <= round_constant9;
+				4'd10: current_round_constant <= round_constant10;
+				4'd11: current_round_constant <= round_constant11;
+				4'd12: current_round_constant <= round_constant12;
+				default: current_round_constant <= round_constant1;
+			endcase
+		end
+	end
+end
+
+always@(key_schedule_round)
+begin
+	if (encrypt)
+	begin
+		case(key_schedule_round)
+			1: selection_round0 <=step1 ;
+			2: round_key1 <= step1;
+			3: round_key2 <= step1;
+			4: round_key3 <= step1;
+			5: round_key4 <= step1;
+			6: round_key5 <= step1;
+			7: round_key6 <= step1;
+			8: round_key7 <= step1;
+			9: round_key8 <= step1;
+			10: round_key9 <= step1;
+			11: round_key10 <= step1;
+			12: round_key11 <= step1;
+			13: round_key12 <= step1;
+		endcase
+	end
+	else
+	begin
+		case(key_schedule_round)
+			1: round_key12 <= step1;
+			2: round_key11 <= step1;
+			3: round_key10 <= step1;
+			4: round_key9 <= step1;
+			5: round_key8 <= step1;
+			6: round_key7 <= step1;
+			7: round_key6 <= step1;
+			8: round_key5 <= step1;
+			9: round_key4 <= step1;
+			10: round_key3 <= step1;
+			11: round_key2 <= step1;
+			12: round_key1 <= step1;
+			13: selection_round0 <=step1 ;
 		endcase
 	end
 end
 
+always@(posedge clk) //selected round key
+begin
+	case(round_num)
+		1: current_round_key <= round_key1;
+		2: current_round_key <= round_key2;
+		3: current_round_key <= round_key3;
+		4: current_round_key <= round_key4;
+		5: current_round_key <= round_key5;
+		6: current_round_key <= round_key6;
+		7: current_round_key <= round_key7;
+		8: current_round_key <= round_key8;
+		9: current_round_key <= round_key9;
+		10: current_round_key <= round_key10;
+		11: current_round_key <= round_key11;
+		12: current_round_key <= round_key12;
+		default: current_round_key <= 0;
+	endcase
+end
 
+
+always@(posedge clk)
+begin
+	if (reset)
+		round_num <= 1;
+	else
+		if (done)
+			round_num <= 13;
+		else
+			//if start: round_num <= 1;
+			if (state)
+				if (counter == 4'hf)
+					round_num <= round_num + 1;	
+end
+
+always@(round_num)
+begin
+	if (reset)
+		done <= 0;
+	else
+		if (round_num > 12)
+			done <= 1;
+		else
+			done <= 0;
+end
+
+always@(round_num)
+begin
+	if (reset)
+		cipher <= 0;
+	else
+		if (round_num > 12)
+			cipher <= step2;
+end
 
 assign end_flag = done;
 assign cipher_text = cipher;
 
 endmodule
-

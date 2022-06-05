@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2016.4 (64-bit)
+# SW Build 1733598 on Wed Dec 14 22:35:39 MST 2016
+# IP Build 1731160 on Wed Dec 14 23:47:21 MST 2016
+# Start of session at: Wed May 04 18:47:02 2022
+# Process ID: 22760
+# Current directory: Z:/mult_rom/mult_rom.runs/impl_1
+# Command line: vivado.exe -log mult_rom.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source mult_rom.tcl -notrace
+# Log file: Z:/mult_rom/mult_rom.runs/impl_1/mult_rom.vdi
+# Journal file: Z:/mult_rom/mult_rom.runs/impl_1\vivado.jou
+#-----------------------------------------------------------
+source mult_rom.tcl -notrace

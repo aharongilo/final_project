@@ -203,19 +203,14 @@ class anubis_functions:
         :param round_constant: for algorithm purpose
         :return: round key for every round
         """
-        #print("key_evolution:\n===============\n")
         ## gamma ##
         key_list = anubis_functions.gamma(key)
-        #print(f"gamma: {key_list}")
         ## pi ##
         after_pi = anubis_functions.pi(key_list)
-        #print(f"pi: {after_pi}")
         ## theta ##
         after_theta = anubis_functions.theta(after_pi)
-        #print(f"theta: {after_theta}")
         ## sigma ##
         evolutioned_key = anubis_functions.sigma(after_theta, round_constant)
-        #print(f"key evolution: {evolutioned_key}")
         return evolutioned_key
 
     @classmethod
@@ -225,16 +220,12 @@ class anubis_functions:
         :param evolutioned_key: the results of the key evolution
         :return: the key schedule for the round
         """
-        #print("key_selection:\n===============\n")
         ## gamma ##
         key_list = anubis_functions.gamma(evolutioned_key)
-        #print(f"gamma: {key_list}")
         ## omega ##
         after_omega = anubis_functions.omega(key_list)
-        #print(f"omega: {after_omega}")
         ## tau ##
         round_key = anubis_functions.tau(after_omega)
-        #print(f"key selection: {round_key}")
         return round_key
 
     @classmethod
@@ -246,19 +237,14 @@ class anubis_functions:
         :param round_key: the key to encrypt with for this round
         :return: cipher text of this round of encrypting
         """
-        #print("key_selection:\n===============\n")
         ## gamma ##
         text_list = anubis_functions.gamma(plain_text)
-        #print(f"gamma: {text_list}")
         ## tau ##
         after_tau = anubis_functions.tau(text_list)
-        #print(f"tau: {after_tau}")
         ## theta ##
         after_theta = anubis_functions.theta(after_tau) if round_number != 12 else after_tau
-        #print(f"theta: {after_theta}")
         ## sigma ##
         cipher = anubis_functions.sigma(after_theta,round_key)
-        #print(f"round out: {cipher}")
         return cipher
 
 def turnToHex(matrix):
@@ -286,7 +272,7 @@ class MyMatrix:
         if len(numbers) != self.size:
             assert False, "please enter a matching list and list size"
 
-def anubis_function(key:list, plain_text:list)->list:
+def anubis_function(key:list, plain_text:list,encrypt = True)->list:
     round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
@@ -305,48 +291,49 @@ def anubis_function(key:list, plain_text:list)->list:
     selected_key = [anubis_functions.key_selection(key)]
     rounds_out = []
     key2use = key
-    plain2use = anubis_functions.sigma(plain_text, selected_key[0])
+    #plain2use = anubis_functions.sigma(plain_text, selected_key[0])
     for i in range(12):
-        print(f"\nkey evolution round {i+1}:\n===================\n")
-        print(f"key: {key2use}")
+        # print(f"\nkey evolution round {i+1}:\n===================\n")
+        #print(f"key: {key2use}")
         evolutioned_key.append(anubis_functions.key_evolution(key2use,constant_list[i]))
         key2use = evolutioned_key[len(evolutioned_key)-1]
     for i in range(12):
-        print(f"\nkey_selection round {i + 1}:\n===================\n")
-        print(f"evo key: {evolutioned_key[i+1]}")
+        #print(f"\nkey_selection round {i + 1}:\n===================\n")
+        #print(f"evo key: {evolutioned_key[i+1]}")
         selected_key.append(anubis_functions.key_selection(evolutioned_key[i+1]))
-    plain2use = anubis_functions.sigma(anubis_functions.key_selection(key),plain)
+    if encrypt:
+        plain2use = anubis_functions.sigma(anubis_functions.key_selection(key), plain_text)
+    else:
+        plain2use = anubis_functions.sigma(plain_text, selected_key[12])
+    print(f"evolutioned key 0: {evolutioned_key[12]}")
+    print(f"selected key 0: {selected_key[12]}")
+    print(f"{len(evolutioned_key)} , {len(selected_key)}")
+    print(f"round in: {plain2use}")
     for i in range(12):
-        print(f"\nround out round {i + 1}:\n===================\n")
-        print(f"plain: {plain2use}")
-        print(f"key: {selected_key[i+1]}")
-        rounds_out.append(anubis_functions.round_function(plain2use,selected_key[i+1],i+1))
+        if encrypt:
+            rounds_out.append(anubis_functions.round_function(plain2use,selected_key[i+1],i+1))
+        elif i == 11:
+            rounds_out.append(anubis_functions.round_function(plain2use, selected_key[0], i + 1))
+        else:
+            rounds_out.append(anubis_functions.round_function(plain2use, anubis_functions.theta(selected_key[11-i]), i + 1))
         plain2use = rounds_out[len(rounds_out)-1]
-    #for i in rounds_out: print(f"{i}\n")
     cipher = rounds_out[11]
     return cipher
 
 
-# print(Gmult(8,3,285,True))
-# print(Gmult(Gmult(8,8,285),8,285))
-# a = ["8d","24","53","17","95","95","00","cc","53","16","74","9e","e9","8c","da","05"]
-# print(anubis_functions.pi(a))
-#print(f", the expected value is: ea5cb1bdd970d7d1fbb2b53028ab88e6")
+
 plain = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"]
+plain2 = ["D7","4C","1B","10","C7","D8","91","F4","B4","59","1B","2C","DB","93","99","10"]
 key = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"]
 plain1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
 key1 = ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"]
-expected_zeros = ["84","A4","67","4F","B0","E8","B1","67","2D","0F","F0","3B","66","0F","5F","62"]
-print(f"\ncipher: {anubis_function(key,plain)}")
-print(f"expected: {expected_zeros}")
-# mult_list = [2,4,6,8,20,58,64,120]
-# with open ("C:\\Users\\aharo\\Desktop\\mult_rom.coe","w") as file:
-#     for i in mult_list:
-#         for j in range(256):
-#             file.write(f"{hex(Gmult(i,j,285)).replace('0x','').zfill(2)} ")
-#print(anubis_function(key,plain))
-# print(Gmult(Gmult(8,8,285),8,285))
-#print(hex(Gmult(6,6,285)))
+expected_zeros = ["62","5F","0F","66","3B","F0","0F","2D","67","B1","E8","B0","4F","67","A4","84"]
+
+a = ['76', '3f', '2e', '1f', 'a3', '25', '1d', '7c', '2d', 'c1', '03', 'bc', '11', '4c', '5c', 'ae']
+b = ['f7', '7f', '6f', '83', '73', '3a', 'e3', '7e', '0e', 'c0', 'eb', '18', '06', '9b', '10', 'bd']
+
+
+print(anubis_function(key,plain))
 
 def make_matrix(a):
     b = []
@@ -359,85 +346,4 @@ def make_matrix(a):
                 b = b + [f"{a[j]}{a[j + 1]}"]
         a = [a[len(a) - 1]] + a[:len(a) - 1]
     return b
-
-# print(hex(Gmult(58,int("0x01",16),285)))
-# print(58^253^211^120)
-# print(int("0x78",16)^int("0xd3",16)^int("0xfd",16)^int("0x3a",16))
-lst = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"]
-round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con4 = ["1e", "47", "54", "bd", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con5 = ["8c", "a5", "7a", "fb", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con6 = ["63", "b8", "dd", "d4", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con7 = ["e5", "b3", "c5", "be", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con8 = ["a9", "88", "0c", "a2", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con9 = ["39", "df", "29", "da", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con10 = ["2b", "a8", "cb", "4c", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con11 = ["4b", "22", "aa", "24", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,round_con9, round_con10, round_con11, round_con12]
-
-
-
-# evolution =[]
-# with open("C:\\Users\\aharo\\Desktop\\key_schedule_test_vector.txt","w") as file:
-#     for i in range(12):
-#         if i ==0:
-#             evolution = anubis_functions.key_evolution(key,constant_list[i])
-#         else:
-#             evolution = anubis_functions.key_evolution(evolution, constant_list[i])
-#         result = anubis_functions.key_selection(evolution)
-#         evolution1 = []
-#         result1 = []
-#         round_con =[]
-#         for j in range(len(result)):
-#             evolution1.append(evolution[15-j])
-#             result1.append(result[15-j])
-#             round_con.append(constant_list[i][15-j])
-#         file.write(f"{''.join(round_con)} {''.join(evolution1)} {''.join(result1)}\n")
-        #file.write(f"{''.join(mat1)} {''.join(round_con11)} {''.join(result1)}\n")
-# with open ("C:\\Users\\aharo\\Desktop\\round_test_vector.txt","w") as file:
-#     for i in range(16):
-#         mat = make_matrix(lst)
-#         lst = lst[1:] + [lst[0]]
-#         print(mat)
-#         #file.write(f"{''.join(mat)} {''.join(anubis_functions.omega(mat))}\n")
-#         result = anubis_functions.round_function(mat,round_con1,1)
-#         mat1 = []
-#         round_con11 = []
-#         result1 = []
-#         for j in range(len(mat)):
-#             mat1.append(mat[15-j])
-#             result1.append(result[15-j])
-#             round_con11.append(round_con1[15-j])
-#         #file.write(f"{''.join(mat1)} {''.join(result1)}\n")
-#         file.write(f"{''.join(mat1)} {''.join(round_con11)} {''.join(result1)}\n")
-
-        #print(mat)
-        #print(anubis_functions.pi(mat))
-
-#print(anubis_functions.omega(key1))
-#cipher = anubis_function(key,plain)
-#str = "".join(cipher[i] for i in range(len(cipher)-1,-1,-1))
-#print (f"the answer is {str}\n we expect: F06860FC6730E818F132C78AF4132AFE")
-# with open("C:\\Users\\aharo\\Desktop\\mult_by_2.json","r") as file:
-#     mult = file.readlines()
-#     for i in range(256):
-#            print(f"{mult[i][:len(mult[i])-2]} Gmult{i} = {hex(Gmult(i,2,285)).replace('0x', '').zfill(2)}")
-#            print("pass" if hex(Gmult(i,2,285)).replace('0x', '').zfill(2) in mult[i] else "FAIL!!!!!!")
-# round_con1 = ["a7", "d3", "e6", "71", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con2 = ["d0", "ac", "4d", "79", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con3 = ["3a", "c9", "91", "fc", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con4 = ["1e", "47", "54", "bd", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con5 = ["8c", "a5", "7a", "fb", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con6 = ["63", "b8", "dd", "d4", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con7 = ["e5", "b3", "c5", "be", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con8 = ["a9", "88", "0c", "a2", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con9 = ["39", "df", "29", "da", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con10 = ["2b", "a8", "cb", "4c", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con11 = ["4b", "22", "aa", "24", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# round_con12 = ["41", "70", "a6", "f9", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
-# constant_list = [round_con1, round_con2, round_con3, round_con4, round_con5, round_con6, round_con7, round_con8,
-#                      round_con9, round_con10, round_con11, round_con12]
 

@@ -44,10 +44,10 @@ begin
 	if (reset)
 		clk_en <= 0;
 	else
-		if (load_key)
-			clk_en <= 1;
-		else
-			if (counter%4 == 3)
+		//if (load_key)
+		//	clk_en <= 1;
+		//else
+			if (counter%4 == 1)
 				clk_en <= 1;
 			else
 				clk_en <= 0;
@@ -86,12 +86,37 @@ begin
 				F_TAU: if (clk_en)
 						begin
 							state <= DECRYPT;
-							tau_out <= step3;
+							if (encrypt)
+							begin
+								selected_key <= step3;
+							end
+							else
+							begin
+								if (round_num == 0)
+									selected_key <= step3;
+								//else if (round_num == 11)
+								//	selected_key <= step3;
+								else if (round_num == 12)
+									selected_key <= step3;
+								else
+									selected_key <= selected_key;
+								tau_out <= step3;
+							end
 						end
 				DECRYPT: if (clk_en)
 							begin
 								state <= F_GAMMA;
-								theta_out <= step4;
+								if (encrypt == 0)
+									if (round_num == 0)
+										selected_key <= tau_out;
+									//else if (round_num == 11)
+									//	selected_key <= tau_out;
+									else if (round_num < 12)
+										selected_key <= step4;
+									else if (round_num == 12)
+										selected_key <= tau_out;
+									else
+										selected_key <= selected_key;
 							end
 			
 				/*reserve isn't part of the algorithm. but since there are 3 states in the state machine, and 2 bits needed
@@ -100,6 +125,7 @@ begin
 	end
 end
 
+/*
 always@(negedge clk)
 begin
 	if (reset)
@@ -115,16 +141,16 @@ begin
 				else if (round_num == 1)
 					selected_key <= tau_out;
 				else if (round_num < 12)
-					selected_key <= tau_out;
+					selected_key <= step4;//theta_out
 				else if (round_num == 12)
-					selected_key <= theta_out;
+					selected_key <= tau_out;
 				else
 					selected_key <= selected_key;
 		else
 			selected_key <= selected_key;
 	end
 end
-
+*/
 assign round_key = selected_key;
 
 endmodule
