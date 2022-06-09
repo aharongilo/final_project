@@ -3,7 +3,6 @@ module tb_anubis ();
 
 reg clk = 0;
 reg reset;
-reg start;
 reg encrypt = 1;
 //reg [127:0] plain_text = 128'h84a4674fb0e8b1672d0ff03b660f5f62;
 reg [127:0] plain_text = 128'h00000000000000000000000000000000;
@@ -53,7 +52,6 @@ end
 anubis DUT (
 .clk(clk),
 .reset(reset),
-.start(start),
 .encrypt(encrypt),
 .plain_text(plain_text),
 .key(key),

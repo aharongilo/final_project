@@ -1,23 +1,12 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: key evolution (Psi)
-
-Description: this module represent the key evolution function in the ANUBIS algorithm
-this function is the first part of the key schedule
-
-input:
-- clk
-- reset
-- clk_en
-- load key
-- round counstant
-- key (128 bits)
-
-output:
-- evolutioned_key
-**************************/
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  key_evolution represent the first function of the key schedule in the algorithm.
+// used modules: gamma, pi, theta, sigma
+//------------------------------------------------------------------
 module key_evolution(
 	input clk,
 	input reset,
@@ -29,6 +18,7 @@ module key_evolution(
 	output [127:0] evolutioned_key
 );
 
+// constant for the state machine
 localparam F_GAMMA = 2'b00;
 localparam F_PI   = 2'b01;
 localparam F_THETA = 2'b10;
@@ -38,42 +28,28 @@ wire [127:0] step1,step2,step3,step4;
 reg [127:0] gamma_out, pi_out, theta_out,out_psi,key_in;
 reg [1:0] state;
 reg clk_en;
-//reg [3:0] counter;
-/*
-always@(posedge clk)
-begin
-	if (reset)
-		counter <= 0;
-	else
-		if (load_key)
-			counter <= 0;
-		else
-			counter <= counter + 1;
-end*/
 
+// clock enable, to know when to save functions output in
+// the registers
 always@(posedge clk)
 begin
 	if (reset)
 		clk_en <= 0;
 	else
-		//if (load_key)
-		//	clk_en <= 1;
-		//else
-			if (counter%4 == 3)
-				clk_en <= 1;
-			else
-				clk_en <= 0;
+		if (counter%4 == 3)
+			clk_en <= 1;
+		else
+			clk_en <= 0;
 end
 
-
+//nested modules
 gamma ps1(key_in,step1);
 pi ps2(gamma_out,step2);
 theta ps3(clk,pi_out,step3);
 sigma ps4(round_constant,theta_out,step4);
 
-always@(posedge clk)//negedge
-/* negedge to sample the right value of clk_en and load_key. sampling in negedge instead of posedg will let them time to
-to go pu or down after the posedge clk*/
+// state machine, code timing
+always@(posedge clk)
 begin
 	if (reset)
 	begin
@@ -83,8 +59,6 @@ begin
 	else
 	begin
 		if (load_key == 1)
-		//	state <= F_GAMMA;
-		//else
 			case(state)
 				F_GAMMA: if (clk_en)
 							begin
@@ -109,9 +83,11 @@ begin
 			endcase
 	end
 end
+
+/*in this module, the input of round k for k>1 is the output of
+ the last round. this process get the output back as a input in
+ the relevant rounds*/
 always@(negedge clk)
-/*only at the first round of key schedule, key evolution get an input from outside,
-in any other round, it feeds itself from the last result*/
 begin
 	if(reset)	
 	begin
@@ -119,7 +95,7 @@ begin
 	end
 	else
 	begin
-		if (load_key)//clk_en
+		if (load_key)
 			if (round_num == 1)
 				key_in <= key;
 			else if (round_num == 0)
@@ -129,6 +105,7 @@ begin
 	end
 end		
 
+// update the output of the module
 assign evolutioned_key = out_psi;
 
 endmodule

@@ -1,24 +1,18 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: gamma
-
-Description:
-this moduel represent the gamma function of the algorithm
-this function substitute the value of the input to another value,
-according to the sbox defined in the algorithm
-the thing is, the sbox define for 8 bits words, but the words we use in the algorithm
-are 128 bits size.
-therefor, this module will split the input word to 8 bits words, and replace them using the
-sbox module.
-
-input:
-- data_in (128 bits)
-
-output:
-- data_out (128 bits)
-**************************/
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  this moduel represent the gamma function of the algorithm
+//				 this function substitute the value of the input to another value,
+//				 according to the sbox defined in the algorithm
+//               the thing is, the sbox define for 8 bits words, but the words we use in the algorithm
+//				 are 128 bits size.
+//				 therefor, this module will split the input word to 8 bits words, and replace them 
+//				 using the sbox module.
+// used modules: sbox
+//------------------------------------------------------------------
 
 module gamma(
 	input [127:0] data_in,

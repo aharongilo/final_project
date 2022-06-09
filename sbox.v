@@ -1,19 +1,14 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  sbox module define the sbox of the algorithm. this module 
+//				 will be use in the gamma module.
+// used modules: none
+//------------------------------------------------------------------
 
-Module name: sbox
-
-Description:
-this module define the sbox of the algorithm.
-this module will be use in the gamma module
-
-input:  
-- in (8 bits)
-
-output: 
-- out (8 bits)
-**************************/
 module sbox 
 (
 	input [7:0] in,

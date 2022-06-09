@@ -1,44 +1,38 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: pi
-
-Description:
-this module represent the pi function of the algorithm.
-this function do permutation on the code word, as define
-in the algorithm:
-for a given matrix:
-   1  2  3  4
-   5  6  7  8
-   9  10 11 12
-   13 14 15 16
-the permutation will be:
-   1  6  11 16
-   5  10 15 4
-   9  14 3  8
-   13 2  7  12
-
-*Note*:
-our algorithm is been describe matematicaly as a matrix with size of 4x4,
-and every word is an element from the GF(2^8).
-however, in the code the matrix is represent as 128 bits word. 
-therefor, we need to convert the matrix to a word.
-for the given matrix:
-   1  2  3  4
-   5  6  7  8
-   9  10 11 12
-   13 14 15 16
-
-the vector form of the matrix: 
-   (MSB:)16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1(:LSB)
-
-input:
-- matrix (128 bits)
-
-output:
-- P_matrix (128 bits)
-**************************/
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  this module represent the pi function of the algorithm.
+//				 this function do permutation on the code word, as define
+//				 in the algorithm:
+//				 for a given matrix:
+//				 1  2  3  4
+//				 5  6  7  8
+//				 9  10 11 12
+//				 13 14 15 16
+//				 the permutation will be:
+//				 1  14 11  8
+//				 5   2 15 12
+//				 9   6  3 16
+//				 13 10  7  4
+//
+// 				 *Note*:
+//				 our algorithm is been describe matematicaly as a matrix with size of 4x4,
+//				 and every word is an element from the GF(2^8).
+//				 however, in the code the matrix is represent as 128 bits word. 
+//				 therefor, we need to convert the matrix to a word.
+//				 for the given matrix:
+//				 1  2  3  4
+//				 5  6  7  8
+//			 	 9  10 11 12
+//				 13 14 15 16
+//
+//				 the vector form of the matrix: 
+//				 (MSB:)16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1(:LSB)
+// used modules: none
+//------------------------------------------------------------------
 
 module pi(
 	input [127:0] matrix,

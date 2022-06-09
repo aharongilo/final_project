@@ -1,21 +1,13 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: sigma
-
-Description:
-this module represent the sigma function in teh algorithm
-this function do bitwise xor between 2 inputs
-
-input:
-- in1 (128 bits)
-- in2 (128 bits)
-
-output:
-- out (128 bits)
-**************************/
-
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  sigma module represent the sigma function in teh algorithm
+//				 this function do bitwise xor between 2 inputs.
+// used modules: none
+//------------------------------------------------------------------
 
 module sigma
 (

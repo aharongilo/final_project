@@ -1,47 +1,40 @@
-/*************************
-Final project 2022 - ANUBIS algorithm on FPGA 
-Authors: Yosef Berger, Aharon Gilo
-
-Module name: omega
-
-Description:
-this moduel represent the omega function of the algorithm.
-the omega function extract the round key for every round, 
-from the key we inserted to the algorithm.
-we can insert the algorithm key with size of Nx4 (4<=N<=10)
-matrix with GF(2^8) elements.
-the function do matrix multiplication between the inserted key 
-and a based on [N^4,5,N] MDS code generator matrix:
-	1   1   1   ... 1
-	1   2   2^2 ... 2^(N-1)
-	1   6   6^2 ... 6^(N-1)
-	1   8   8^2 ... 8^(N-1)
-in our case, N=4, therefor, the matrix will be:
-	1 1  1  1
-    1 2  4  8 
-    1 6 24 d8
-    1 8 40 200
-the equation is:  extract key = V*key
-extract key is a mtrix with size of 4x4.
-the key vector is:
-[MSB] 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 [LSB]
-
-therefor, the key matrix is:
- 1  2  3  4
- 5  6  7  8
- 9 10 11 12 
-13 14 15 16 
-
-in addition, the multiplying above GF(2^8) will be executed by block ROM module made using the 
-VIVADO software of the Xilinx company.
-
-input:
-- clk
-- key (128 bits)
-
-output:
-- extract_key (128 bits)
-**************************/
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  this moduel represent the omega function of the algorithm.
+//  			 the omega function extract the round key for every round, 
+// 				 from the key we inserted to the algorithm.
+// 				 we can insert the algorithm key with size of Nx4 (4<=N<=10)
+// 				 matrix with GF(2^8) elements.
+// 				 the function do matrix multiplication between the inserted key 
+// 				 and a based on [N^4,5,N] MDS code generator matrix:
+//				 1   1   1   ... 1
+//				 1   2   2^2 ... 2^(N-1)
+//				 1   6   6^2 ... 6^(N-1)
+// 				 1   8   8^2 ... 8^(N-1)
+//				 in our case, N=4, therefor, the matrix will be:
+//		   	     1 1  1  1
+//    			 1 2  4  8 
+//    			 1 6 14 78
+// 			     1 8 40 3a
+// 				 the equation is:  extract key = V*key
+// 				 extract key is a mtrix with size of 4x4.
+// 				 the key vector is:
+// 				 [MSB] 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 [LSB]
+//
+// 				 therefor, the key matrix is:
+//  			 1  2  3  4
+// 				 5  6  7  8
+//			     9 10 11 12 
+//				 13 14 15 16 
+//
+//				 in addition, the multiplying above GF(2^8) will be executed by block ROM module made using the 
+// 				 VIVADO software of the Xilinx company.
+// used modules: LUT in the ROM memory on the board
+//------------------------------------------------------------------
 
 module omega
 (

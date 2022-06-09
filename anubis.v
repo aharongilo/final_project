@@ -1,7 +1,18 @@
+//------------------------------------------------------------------
+// Project Name: Anubis Crypto algorithm implementation on Xilinx FPGA
+// Team Number:  xohw22-025
+// Participants: Yosef Berger, Aharon Gilo
+// Supervisor:	 Mr. Uri Stroh
+// Date:		 June 2022
+// Description:  This module is the top module of the algorithm itself.
+//				 It derive the whole algorithm. It will output the result of
+//				 the calculations.
+// used modules: sigma, key_schedule, round
+//------------------------------------------------------------------
+
 module anubis(
 	input clk,
 	input reset,
-	input start,
 	input encrypt,
 	input [127:0] plain_text,
 	input [127:0] key,
@@ -33,13 +44,12 @@ reg [127:0] round_constant11 = 128'h00000000000000000000000024aa224b;
 reg [127:0] round_constant12 = 128'h000000000000000000000000f9a67041;
 reg [127:0] current_round_constant;
 
-localparam key_schedule = 0;
-localparam round = 1;
-
+//nested modules
 sigma pre(selection_round0,plain_text,step0);
 key_schedule first(clk,reset,encrypt,~state,counter,key,current_round_constant,step1,key_schedule_round);
 round second(clk,reset,counter,state,round_num,round_in,current_round_key,step2);
 
+//counter, for the timing in the code
 always@(posedge clk)
 begin
 	if (reset)
@@ -70,14 +80,8 @@ begin
 				round_in <= step0;
 		end
 end
-/*
-always@(posedge clk)
-begin
-	if (~state)
-		if (key_schedule_round == 12)
-			round_in <= step0;
-end
-*/
+
+
 /*proccess for round constant*/
 always@(negedge clk)
 begin
@@ -126,6 +130,7 @@ begin
 	end
 end
 
+// get the round keys from the key_schedule module
 always@(key_schedule_round)
 begin
 	if (encrypt)
@@ -166,7 +171,8 @@ begin
 	end
 end
 
-always@(posedge clk) //selected round key
+// selected the round key for the current round
+always@(posedge clk) 
 begin
 	case(round_num)
 		1: current_round_key <= round_key1;
@@ -185,7 +191,7 @@ begin
 	endcase
 end
 
-
+// decide about the round number
 always@(posedge clk)
 begin
 	if (reset)
@@ -200,6 +206,7 @@ begin
 					round_num <= round_num + 1;	
 end
 
+// done flag 
 always@(round_num)
 begin
 	if (reset)
@@ -211,6 +218,7 @@ begin
 			done <= 0;
 end
 
+// geet the cipher for the plain text
 always@(round_num)
 begin
 	if (reset)
