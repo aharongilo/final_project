@@ -44,12 +44,13 @@ reg [127:0] round_constant11 = 128'h00000000000000000000000024aa224b;
 reg [127:0] round_constant12 = 128'h000000000000000000000000f9a67041;
 reg [127:0] current_round_constant;
 
-//nested modules
+localparam key_schedule = 0;
+localparam round = 1;
+
 sigma pre(selection_round0,plain_text,step0);
 key_schedule first(clk,reset,encrypt,~state,counter,key,current_round_constant,step1,key_schedule_round);
 round second(clk,reset,counter,state,round_num,round_in,current_round_key,step2);
 
-//counter, for the timing in the code
 always@(posedge clk)
 begin
 	if (reset)
@@ -71,17 +72,20 @@ begin
 	if (reset)
 		state <= 0;
 	else
-		if (start)
-			state <= 0;
-		else
 		begin
 			if (key_schedule_round >12)
 				state <= 1;
 				round_in <= step0;
 		end
 end
-
-
+/*
+always@(posedge clk)
+begin
+	if (~state)
+		if (key_schedule_round == 12)
+			round_in <= step0;
+end
+*/
 /*proccess for round constant*/
 always@(negedge clk)
 begin
@@ -130,7 +134,6 @@ begin
 	end
 end
 
-// get the round keys from the key_schedule module
 always@(key_schedule_round)
 begin
 	if (encrypt)
@@ -171,8 +174,7 @@ begin
 	end
 end
 
-// selected the round key for the current round
-always@(posedge clk) 
+always@(posedge clk) //selected round key
 begin
 	case(round_num)
 		1: current_round_key <= round_key1;
@@ -191,7 +193,7 @@ begin
 	endcase
 end
 
-// decide about the round number
+
 always@(posedge clk)
 begin
 	if (reset)
@@ -206,7 +208,6 @@ begin
 					round_num <= round_num + 1;	
 end
 
-// done flag 
 always@(round_num)
 begin
 	if (reset)
@@ -218,7 +219,6 @@ begin
 			done <= 0;
 end
 
-// geet the cipher for the plain text
 always@(round_num)
 begin
 	if (reset)

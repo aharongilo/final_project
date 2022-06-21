@@ -43,17 +43,15 @@ begin
 			state <= state + 1;
 end
 
-// initialize the input at the start
-always@(negedge reset)
-begin
-	evolutioned_key <= key;
-end
 
 // state machine, code timing
 always@(negedge clk)
 begin
 	if (reset)
+	begin
 		cycle_number <= 0;
+		evolutioned_key <= key;
+	end
 	else 
 	begin	
 		if (load)
