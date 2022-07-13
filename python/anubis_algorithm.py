@@ -318,6 +318,13 @@ def anubis_function(key:list, plain_text:list,encrypt = True)->list:
             rounds_out.append(anubis_functions.round_function(plain2use, anubis_functions.theta(selected_key[11-i]), i + 1))
         plain2use = rounds_out[len(rounds_out)-1]
     cipher = rounds_out[11]
+    with open ("C:\\Users\\aharo\\Desktop\\debug.txt","w") as file:
+        for i,key in enumerate(evolutioned_key):
+            file.write(f"round {i}, evo: {key}\n")
+        for i,key in enumerate(selected_key):
+            file.write(f"round {i}, sel: {key}\n")
+        for i,out in enumerate(rounds_out):
+            file.write(f"round {i}, out: {out}\n")
     return cipher
 
 
@@ -333,7 +340,11 @@ a = ['76', '3f', '2e', '1f', 'a3', '25', '1d', '7c', '2d', 'c1', '03', 'bc', '11
 b = ['f7', '7f', '6f', '83', '73', '3a', 'e3', '7e', '0e', 'c0', 'eb', '18', '06', '9b', '10', 'bd']
 
 
-print(anubis_function(key,plain))
+#print(anubis_function(key,plain))
+
+with open ("C:\\Users\\aharo\\Desktop\\mult_by_3a.txt","w") as file:
+     for i in range(256):
+         file.write(f"8'h{hex(i)[2:].zfill(2)}: out = 8'h{hex(Gmult(i,58,285))[2:].zfill(2)};\n")
 
 def make_matrix(a):
     b = []

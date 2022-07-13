@@ -32,7 +32,6 @@
 //------------------------------------------------------------------
 
 module theta(
-	input clk,
 	input [127:0] data_in,
 	output [127:0] deffused_data
 );
@@ -41,25 +40,25 @@ wire [7:0] temp1 , temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp1
 reg [127:0] result = 0;
 
 //LSB: first line in the matrix
-mult_rom M1(clk,{3'b000,data_in[15:8]^data_in[31:24]},temp1);  
-mult_rom M2(clk,{3'b000,data_in[7:0]^data_in[23:16]},temp2);
-mult_rom M3(clk,{3'b001,data_in[23:16]^data_in[31:24]},temp3);
-mult_rom M4(clk,{3'b001,data_in[7:0]^data_in[15:8]},temp4);
+mult_rom2 M1(data_in[15:8]^data_in[31:24],temp1);  
+mult_rom2 M2(data_in[7:0]^data_in[23:16],temp2);
+mult_rom4 M3(data_in[23:16]^data_in[31:24],temp3);
+mult_rom4 M4(data_in[7:0]^data_in[15:8],temp4);
 
-mult_rom M5(clk,{3'b000,(data_in[47:40]^data_in[63:56])},temp5);
-mult_rom M6(clk,{3'b000,(data_in[39:32]^data_in[55:48])},temp6);
-mult_rom M7(clk,{3'b001,(data_in[55:48]^data_in[63:56])},temp7);
-mult_rom M8(clk,{3'b001,(data_in[39:32]^data_in[47:40])},temp8);
+mult_rom2 M5((data_in[47:40]^data_in[63:56]),temp5);
+mult_rom2 M6((data_in[39:32]^data_in[55:48]),temp6);
+mult_rom4 M7((data_in[55:48]^data_in[63:56]),temp7);
+mult_rom4 M8((data_in[39:32]^data_in[47:40]),temp8);
 
-mult_rom M9(clk,{3'b000,(data_in[79:72]^data_in[95:88])},temp9);
-mult_rom M10(clk,{3'b000,(data_in[71:64]^data_in[87:80])},temp10);
-mult_rom M11(clk,{3'b001,(data_in[87:80]^data_in[95:88])},temp11);
-mult_rom M12(clk,{3'b001,(data_in[71:64]^data_in[79:72])},temp12);
+mult_rom2 M9((data_in[79:72]^data_in[95:88]),temp9);
+mult_rom2 M10((data_in[71:64]^data_in[87:80]),temp10);
+mult_rom4 M11((data_in[87:80]^data_in[95:88]),temp11);
+mult_rom4 M12((data_in[71:64]^data_in[79:72]),temp12);
 
-mult_rom M13(clk,{3'b000,(data_in[111:104]^data_in[127:120])},temp13);
-mult_rom M14(clk,{3'b000,(data_in[103:96]^data_in[119:112])},temp14);
-mult_rom M15(clk,{3'b001,(data_in[119:112]^data_in[127:120])},temp15);
-mult_rom M16(clk,{3'b001,(data_in[103:96]^data_in[111:104])},temp16);
+mult_rom2 M13((data_in[111:104]^data_in[127:120]),temp13);
+mult_rom2 M14((data_in[103:96]^data_in[119:112]),temp14);
+mult_rom4 M15((data_in[119:112]^data_in[127:120]),temp15);
+mult_rom4 M16((data_in[103:96]^data_in[111:104]),temp16);
 
 always @(temp1 or temp2 or temp3 or temp4 or temp5 or temp6 or temp7 or temp8 or temp9 or temp10 or temp11 or temp12 or temp13 or temp14 or temp15 or temp16)
 begin
