@@ -30,22 +30,22 @@ wire [127:0] step0,step1,step2;
 wire [3:0] key_schedule_round;
 
 //round constans:
-reg [127:0] round_constant1 = 128'h00000000000000000000000071e6d3a7;
-reg [127:0] round_constant2 = 128'h000000000000000000000000794dacd0;
-reg [127:0] round_constant3 = 128'h000000000000000000000000fc91c93a;
-reg [127:0] round_constant4 = 128'h000000000000000000000000bd54471e;
-reg [127:0] round_constant5 = 128'h000000000000000000000000fb7aa58c;
-reg [127:0] round_constant6 = 128'h000000000000000000000000d4ddb863;
-reg [127:0] round_constant7 = 128'h000000000000000000000000bec5b3e5;
-reg [127:0] round_constant8 = 128'h000000000000000000000000a20c88a9;
-reg [127:0] round_constant9 = 128'h000000000000000000000000da29df39;
-reg [127:0] round_constant10 = 128'h0000000000000000000000004ccba82b;
-reg [127:0] round_constant11 = 128'h00000000000000000000000024aa224b;
-reg [127:0] round_constant12 = 128'h000000000000000000000000f9a67041;
+localparam [127:0] round_constant1 = 128'h00000000000000000000000071e6d3a7;
+localparam [127:0] round_constant2 = 128'h000000000000000000000000794dacd0;
+localparam [127:0] round_constant3 = 128'h000000000000000000000000fc91c93a;
+localparam [127:0] round_constant4 = 128'h000000000000000000000000bd54471e;
+localparam [127:0] round_constant5 = 128'h000000000000000000000000fb7aa58c;
+localparam [127:0] round_constant6 = 128'h000000000000000000000000d4ddb863;
+localparam [127:0] round_constant7 = 128'h000000000000000000000000bec5b3e5;
+localparam [127:0] round_constant8 = 128'h000000000000000000000000a20c88a9;
+localparam [127:0] round_constant9 = 128'h000000000000000000000000da29df39;
+localparam [127:0] round_constant10 = 128'h0000000000000000000000004ccba82b;
+localparam [127:0] round_constant11 = 128'h00000000000000000000000024aa224b;
+localparam [127:0] round_constant12 = 128'h000000000000000000000000f9a67041;
 reg [127:0] current_round_constant;
 
-localparam key_schedule = 0;
-localparam round = 1;
+localparam key_schedule = 1'b0;
+localparam round = 1'b1;
 
 sigma pre(selection_round0,plain_text,step0);
 key_schedule first(clk,reset,encrypt,~state,counter,key,current_round_constant,step1,key_schedule_round);
@@ -134,7 +134,7 @@ begin
 	end
 end
 
-always@(key_schedule_round)
+always@(posedge clk) //key_schedule_round
 begin
 	if (encrypt)
 	begin
@@ -152,6 +152,7 @@ begin
 			11: round_key10 <= step1;
 			12: round_key11 <= step1;
 			13: round_key12 <= step1;
+			default: selection_round0 <=step1;
 		endcase
 	end
 	else
@@ -170,6 +171,7 @@ begin
 			11: round_key2 <= step1;
 			12: round_key1 <= step1;
 			13: selection_round0 <=step1 ;
+			default: round_key12 <= step1;
 		endcase
 	end
 end
@@ -208,7 +210,7 @@ begin
 					round_num <= round_num + 1;	
 end
 
-always@(round_num)
+always@(negedge clk)//round_num or reset
 begin
 	if (reset)
 		done <= 0;
@@ -219,9 +221,9 @@ begin
 			done <= 0;
 end
 
-always@(round_num)
+always@(negedge clk)//round_num or reset
 begin
-	if (reset)
+	if (reset && round_num == 4'h1)
 		cipher <= 0;
 	else
 		if (round_num > 12)

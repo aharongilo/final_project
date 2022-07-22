@@ -26,8 +26,8 @@ reg [127:0] evolutioned_key,selected_key;
 wire [127:0] step1,step2;
 
 // constant for the state machine
-localparam F_KEY_EVOLUTION = 0;
-localparam F_KEY_SELECTION = 1;
+localparam F_KEY_EVOLUTION = 1'b0;
+localparam F_KEY_SELECTION = 1'b1;
 
 //nested modules
 key_evolution first(clk,reset,counter,~state,cycle_number,key,round_constant,step1);

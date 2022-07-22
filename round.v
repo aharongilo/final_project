@@ -37,7 +37,6 @@ localparam F_SIGMA = 2'b11;
 wire [127:0] step1,step2,step3,step4;
 reg [127:0] gamma_out, tau_out, theta_out,cipher;
 reg [1:0] state;
-reg clk_en;
 reg [127:0] round_plain_text;
 /*
 	clk_en will be driven by the ANUBIS top module
@@ -50,19 +49,6 @@ tau s2(gamma_out,step2);
 theta s3(tau_out,step3);
 sigma s4(round_key,theta_out,step4);
 
-always@(posedge clk)
-begin
-	if (reset)
-		clk_en <= 0;
-	else
-		if (load_text)
-			clk_en <= 1;
-		else
-			if (counter%4 == 3)
-				clk_en <= 1;
-			else
-				clk_en <= 0;
-end
 
 always @(negedge clk)
 /* negedge to sample the right value of clk_en and load_text. sampling in negedge instead of posedg will let them time to
@@ -77,30 +63,19 @@ begin
 	begin
 		if (load_text == 1)
 		begin
-		//	state <= F_GAMMA;
-		//end
-		//else
-		//begin
 			if (counter%4 == 3)
 				case(state)
-					F_GAMMA: //if (clk_en)
+					F_GAMMA: 
 								begin
 									state <= F_TAU;
 									gamma_out <= step1;
 								end
-					F_TAU:   //if (clk_en)
+					F_TAU:   
 								begin
-									//if (round_number == 12)
-									//begin
-									//	state <= F_SIGMA;
-									//end
-									//else
-									//begin
 									state <= F_THETA;
-									//end
 									tau_out <= step2;
 								end
-					F_THETA: //if (clk_en)
+					F_THETA: 
 								begin						
 									state <= F_SIGMA;
 									if (round_number == 12)
@@ -108,7 +83,7 @@ begin
 									else
 										theta_out <= step3;
 								end
-					F_SIGMA: //if (clk_en)
+					F_SIGMA: 
 								begin
 									state <= F_GAMMA;
 									cipher <= step4;
@@ -137,9 +112,6 @@ begin
 		end
 	end
 end
-/*gamma s1(round_plain_text,step1);
-tau   s2(gamma_out,step2);
-theta s3(tau_out,step3);
-sigma s4(theta_out,step4);*/
+
 
 endmodule
